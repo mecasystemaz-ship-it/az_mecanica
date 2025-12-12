@@ -1,62 +1,89 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
-package modelo;
+ */package modelo;
 
 import java.sql.*;
 
 public class UsuarioDAO {
 
-    // Método para la verificación de credenciales
-    public static String verificarCredenciales(String usuario, String contrasena) {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        String nombreCompleto = null;
+    // ---- Config de conexión (usa tus valores)
+    private static final String URL  = "jdbc:mysql://localhost:3306/az_mecanica?useSSL=false&serverTimezone=UTC";
+    private static final String USER = "root";
+    private static final String PASS = "";
 
-        try {
-            // Cargar Driver y Conexión (Asegúrate de que 'az_mecanica' sea correcto)
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/az_mecanica";
-            String user = "root";
-            String password = "";
+    static {
+        try { Class.forName("com.mysql.cj.jdbc.Driver"); } 
+        catch (ClassNotFoundException e) { throw new RuntimeException(e); }
+    }
 
-            conn = DriverManager.getConnection(url, user, password);
+    /**
+     * Login que retorna el Usuario (id, usuario, nombre completo y rol).
+     * Devuelve null si usuario/contraseña no coinciden o está inactivo.
+     */
+    public static Usuario login(String usuario, String contrasena) {
+        String sql = "SELECT id, usuario, nombre, apellido, rol " +
+                     "FROM usuarios " +
+                     "WHERE usuario = ? AND contrasena = ? AND estado = 1 " +
+                     "LIMIT 1";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
 
-            // 1. Consulta SQL para buscar usuario y contraseña
-            // NOTA DE SEGURIDAD: En un proyecto real, se compara el HASH de la contraseña, no el texto plano.
-            String sql = "SELECT nombre, apellido FROM usuarios WHERE usuario = ? AND contrasena = ?";
-            
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, usuario);
-            pstmt.setString(2, contrasena); // ¡Aquí se debería comparar el HASH!
+            ps.setString(1, usuario);
+            ps.setString(2, contrasena); // TODO: luego usa hash (BCrypt/SHA-256)
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    String user = rs.getString("usuario");
+                    String nombre = rs.getString("nombre");
+                    String apellido = rs.getString("apellido");
+                    String rol = rs.getString("rol");
 
-            rs = pstmt.executeQuery();
+                    String nombreCompleto = (nombre == null ? "" : nombre.trim()) +
+                                            " " +
+                                            (apellido == null ? "" : apellido.trim());
 
-            // 2. Si se encuentra un resultado, las credenciales son correctas
-            if (rs.next()) {
-                String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
-                // Concatenamos el nombre completo para la sesión
-                nombreCompleto = nombre + " " + (apellido != null ? apellido : "");
+                    return new Usuario(id, user, nombreCompleto.trim(),
+                                       (rol == null ? "" : rol.trim()));
+                }
             }
-
-            return nombreCompleto; // Retorna el nombre si es exitoso, o null si falla
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            return null;
-        } finally {
-            // Cerrar recursos
-            try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
+        return null;
+    }
+
+    /* ---- Tu método anterior sigue funcionando, pero ya no lo uses: */
+    public static String verificarCredenciales(String usuario, String contrasena) {
+        String nombreCompleto = null;
+        String sql = "SELECT nombre, apellido FROM usuarios WHERE usuario = ? AND contrasena = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, usuario);
+            pstmt.setString(2, contrasena);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String nombre = rs.getString("nombre");
+                    String apellido = rs.getString("apellido");
+                    nombreCompleto = (nombre == null ? "" : nombre) + " " + (apellido == null ? "" : apellido);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return (nombreCompleto == null ? null : nombreCompleto.trim());
+    }
+
+    /** Utilidad opcional si alguna vez quieres leer solo el rol */
+    public static String obtenerRol(String usuario) {
+        String sql = "SELECT rol FROM usuarios WHERE usuario = ? AND estado = 1";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, usuario);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getString("rol");
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
     }
 }

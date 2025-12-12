@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import modelo.Usuario;
 
 import modelo.UsuarioDAO; // Importamos el modelo
 
@@ -22,41 +23,29 @@ import modelo.UsuarioDAO; // Importamos el modelo
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
+   @Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
 
-        // 1. Obtener parámetros del formulario
-        String usuario = request.getParameter("usuario");
-        String contrasena = request.getParameter("contrasena");
+    request.setCharacterEncoding("UTF-8");
 
-        // 2. Llamar al modelo para verificar credenciales
-        String nombreUsuario = UsuarioDAO.verificarCredenciales(usuario, contrasena);
+    String usuario = request.getParameter("usuario");
+    String contrasena = request.getParameter("contrasena");
 
-        if (nombreUsuario != null) {
-            // 3. Éxito en el Login: Iniciar Sesión
-            HttpSession session = request.getSession();
-            
-            // Guardamos el nombre de usuario en la sesión para mostrarlo en el index.jsp
-            session.setAttribute("nombreUsuario", nombreUsuario.trim()); 
-            
-            // Aquí se podría guardar el ID o el rol del usuario:
-            // session.setAttribute("rol", "CLIENTE");
+    Usuario u = UsuarioDAO.login(usuario, contrasena);
 
-            // 4. Redirigir al index (página principal)
-            response.sendRedirect("index.jsp");
+    if (u != null) {
+        HttpSession session = request.getSession(true);
+        session.setAttribute("nombreUsuario", u.getNombre()); // "Hugo Huallpa"
+        session.setAttribute("rol", u.getRol());              // "ADMIN" o "CLIENTE"
+        // (opcional) session.setAttribute("idUsuario", u.getId());
 
-        } else {
-            // 5. Fallo en el Login: Redirigir de vuelta al login.jsp con error
-            String error = "Credenciales incorrectas. Verifique su usuario y contraseña.";
-            
-            // Guardamos el mensaje de error para que login.jsp lo muestre
-            request.setAttribute("error", error); 
-            
-            // Reenviamos la solicitud de vuelta a login.jsp
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        }
+        response.sendRedirect(request.getContextPath() + "/index.jsp");
+    } else {
+        request.setAttribute("error", "Credenciales incorrectas. Verifique su usuario y contraseña.");
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
+}
     
     // Opcional: Manejar peticiones GET (si alguien intenta acceder al servlet por URL)
     @Override
