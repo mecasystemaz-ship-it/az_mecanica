@@ -1,41 +1,139 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+// Archivo: src/main/java/model/Cita.java
 package modelo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Cita {
-    private Long id;
+
+    private int id;
+    private String dniCliente;
+    private String placaVehiculo;
+    private int idServicio;
+    private String dniEmpleado;
     private LocalDate fecha;
     private LocalTime hora;
-    private String tipo;
-    private String estado;     // PENDIENTE | CONFIRMADA | CANCELADA
     private String notas;
-    private String idCliente;  // DNI
-    private Integer idEmpleado;
+    private String estado; // Campo no incluido en tu CREATE TABLE, pero necesario para el calendario (PENDIENTE, CONFIRMADA, CANCELADA).
 
-    // Solo para la vista (JOIN clientes)
-    private String clienteNombre;
+    // Atributos para la vista (información de las claves foráneas)
+    private String nombreCliente;
+    private String nombreServicio;
+    private String horaTxt; // Para formato HH:MM en la vista
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
-    public LocalTime getHora() { return hora; }
-    public void setHora(LocalTime hora) { this.hora = hora; }
-    public String getTipo() { return tipo; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
-    public String getNotas() { return notas; }
-    public void setNotas(String notas) { this.notas = notas; }
-    public String getIdCliente() { return idCliente; }
-    public void setIdCliente(String idCliente) { this.idCliente = idCliente; }
-    public Integer getIdEmpleado() { return idEmpleado; }
-    public void setIdEmpleado(Integer idEmpleado) { this.idEmpleado = idEmpleado; }
-    public String getClienteNombre() { return clienteNombre; }
-    public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
+    // Constructores, Getters y Setters
+    public Cita() {
+        this.estado = "PENDIENTE"; // Valor por defecto
+    }
+
+    // Getters
+    public int getId() {
+        return id;
+    }
+
+    public String getDniCliente() {
+        return dniCliente;
+    }
+
+    public String getPlacaVehiculo() {
+        return placaVehiculo;
+    }
+
+    public int getIdServicio() {
+        return idServicio;
+    }
+
+    public String getDniEmpleado() {
+        return dniEmpleado;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public LocalTime getHora() {
+        return hora;
+    }
+
+    public String getNotas() {
+        return notas;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public String getNombreCliente() {
+        return nombreCliente;
+    }
+
+    public String getNombreServicio() {
+        return nombreServicio;
+    }
+
+    // Getters para el JSP (usando los nombres de atributos esperados en tu JSP)
+    public int getId_cita() {
+        return id;
+    }
+
+    public String getCliente() {
+        return nombreCliente;
+    }
+
+    public String getServicio() {
+        return nombreServicio;
+    }
+
+    public String getHoraTxt() {
+        // Formateo simple para HH:MM
+        if (hora != null) {
+            return hora.toString().substring(0, 5);
+        }
+        return "";
+    }
+
+    // Setters
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setDniCliente(String dniCliente) {
+        this.dniCliente = dniCliente;
+    }
+
+    public void setPlacaVehiculo(String placaVehiculo) {
+        this.placaVehiculo = placaVehiculo;
+    }
+
+    public void setIdServicio(int idServicio) {
+        this.idServicio = idServicio;
+    }
+
+    public void setDniEmpleado(String dniEmpleado) {
+        this.dniEmpleado = dniEmpleado;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public void setHora(LocalTime hora) {
+        this.hora = hora;
+    }
+
+    public void setNotas(String notas) {
+        this.notas = notas;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public void setNombreCliente(String nombreCliente) {
+        this.nombreCliente = nombreCliente;
+    }
+
+    public void setNombreServicio(String nombreServicio) {
+        this.nombreServicio = nombreServicio;
+    }
 }

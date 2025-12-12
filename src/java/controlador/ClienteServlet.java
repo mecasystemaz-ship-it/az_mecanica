@@ -105,7 +105,7 @@ public class ClienteServlet extends HttpServlet {
             }
         }
 
-        // 💡 CRÍTICO: Añadir la acción al request para que el JSP la pueda leer
+        // CRÍTICO: Añadir la acción al request para que el JSP la pueda leer
         request.setAttribute("action", action); // Puede ser "edit", "view", o "create" (por defecto)
 
         // El JSP debe leer si 'cliente' está presente para decidir si es CREATE o EDIT
@@ -125,7 +125,7 @@ public class ClienteServlet extends HttpServlet {
 
         // 2. Lógica de validación
         if (clienteDAO.existeClientePorDni(dni)) {
-            // 🚨 CRÍTICO: El DNI ya existe, no se puede registrar.
+            // CRÍTICO: El DNI ya existe, no se puede registrar.
 
             String mensajeError = "ERROR: El DNI " + dni + " ya está registrado. Use la opción Editar.";
 

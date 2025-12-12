@@ -38,8 +38,8 @@
         <nav class="tabs">
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
             <a>Registro de Pagos</a>
-            <a>Productos</a>
-            <a href="${pageContext.request.contextPath}/inventario.jsp">Inventario</a>
+            <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
+            <a>Inventario</a>
             <a href="${pageContext.request.contextPath}/citas.jsp">Citas</a>
             <a href="${pageContext.request.contextPath}/servicios">Servicios</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>

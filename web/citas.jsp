@@ -62,9 +62,9 @@
   <a>Productos</a>
   <a>Inventario</a>
   <a class="active">Citas</a>
-  <a href="servicios.jsp">Servicios</a>
-  <a href="clientes.jsp">Clientes</a>
-  <a href="vehiculos.jsp">Vehículos</a>
+  <a href="servicios">Servicios</a>
+  <a href="clientes">Clientes</a>
+  <a href="vehiculos">Vehículos</a>
 </nav>
 
 <main class="container">

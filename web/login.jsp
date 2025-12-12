@@ -5,7 +5,20 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <%
+    //  Evitar caché SIEMPRE
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+
+    // Evitar que un usuario logeado vuelva al login
+    if (session.getAttribute("usuarioLogeado") != null) {
+        response.sendRedirect("index.jsp");  // o dashboard_admin.jsp
+        return;
+    }
+
+    // Mostrar mensaje de registro exitoso si existe
     String registroExitoso = (String) session.getAttribute("registroExitoso");
     if (registroExitoso != null) {
 %>
@@ -13,7 +26,7 @@
     <%= registroExitoso%>
 </div>
 <%
-        session.removeAttribute("registroExitoso"); // Limpia el mensaje para que no se muestre de nuevo
+        session.removeAttribute("registroExitoso");
     }
 %>
 <!DOCTYPE html>

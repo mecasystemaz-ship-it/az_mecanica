@@ -10,8 +10,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexionDB {
+    
+////    // --- Configuración de la Base de Datos (¡MODIFICAR!) ---
+//    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+//    private static final String URL = "jdbc:mysql://10.100.83.114:3306/az_mecanica"; // Reemplazar 'tu_nombre_db'
+//    private static final String USER = "root";   // Reemplazar 'tu_usuario'
+//    private static final String PASS = "NqbASVTnsC";   // Reemplazar 'tu_password'
 
-    // --- Configuración de la Base de Datos (¡MODIFICAR!) ---
+// --- Configuración de la Base de Datos (¡MODIFICAR!) ---
+
+//     --- Configuración de la Base de Datos (¡MODIFICAR!) ---
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String URL = "jdbc:mysql://localhost:3306/az_mecanica"; // Reemplazar 'tu_nombre_db'
     private static final String USER = "root";   // Reemplazar 'tu_usuario'

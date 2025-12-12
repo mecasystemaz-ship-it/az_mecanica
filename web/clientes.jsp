@@ -35,14 +35,14 @@
 
         <!-- NAV -->
         <nav class="tabs">
-            <a href="index.jsp">Inicio</a>
+            <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
             <a>Registro de Pagos</a>
-            <a>Productos</a>
+            <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
             <a>Inventario</a>
-            <a href="citas.jsp">Citas</a>
-            <a href="servicios">Servicios</a>
-            <a class="active">Clientes</a>
-            <a href="vehiculos.jsp">Vehículos</a>
+            <a href="${pageContext.request.contextPath}/citas.jsp">Citas</a>
+            <a href="${pageContext.request.contextPath}/servicios">Servicios</a>
+            <a class="active" href="${pageContext.request.contextPath}/clientes">Clientes</a>
+            <a href="${pageContext.request.contextPath}/vehiculos">Vehículos</a>
         </nav>
 
         <main class="container">

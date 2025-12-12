@@ -209,6 +209,13 @@
                     <h4>Gestión de Proveedores</h4>
                     <small>Agregar, editar y eliminar proveedores.</small>
                 </a>
+
+                <a href="${pageContext.request.contextPath}/productos" class="dashboard__item">
+                    <h3>🛒</h3>
+                    <h4>Gestión de Productos</h4>
+                    <small>Agregar, editar y eliminar productos del inventario.</small>
+                </a>
+
             </div>
 
             <hr>

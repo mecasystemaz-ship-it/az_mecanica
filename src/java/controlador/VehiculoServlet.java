@@ -75,7 +75,7 @@ public class VehiculoServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // 1. CARGAR CLIENTES: Necesario para el <select> en vehiculo-form.jsp
-        // 🛑 ESTO ASEGURA QUE "${listaClientes}" FUNCIONE EN EL JSP 🛑
+        //  ESTO ASEGURA QUE "${listaClientes}" FUNCIONE EN EL JSP 
         List<Cliente> listaClientes = clienteDAO.listarClientes();
         request.setAttribute("listaClientes", listaClientes);
 
