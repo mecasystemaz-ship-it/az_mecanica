@@ -138,4 +138,65 @@ public class ProformaDAO {
         }
         return filasAfectadas > 0;
     }
+    
+    // En ProformaDAO.java
+
+private static final String SQL_SELECT_BY_STATE = 
+    "SELECT p.id_proforma, p.fecha, p.id_cliente, p.monto_estimado, p.estado, c.nombres, c.apellidos " +
+    "FROM proforma p JOIN clientes c ON p.id_cliente = c.dni WHERE p.estado = ?";
+
+public List<Proforma> listarPorEstado(String estado) {
+    List<Proforma> lista = new ArrayList<>();
+    try (Connection conn = obtenerConexion(); PreparedStatement ps = conn.prepareStatement(SQL_SELECT_BY_STATE)) {
+        ps.setString(1, estado);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Proforma p = new Proforma();
+                p.setIdProforma(rs.getString("id_proforma"));
+                p.setFecha(rs.getDate("fecha"));
+                p.setIdCliente(rs.getString("id_cliente"));
+                p.setMontoEstimado(rs.getDouble("monto_estimado"));
+                p.setEstado(rs.getString("estado"));
+                p.setNombreCliente(rs.getString("nombres") + " " + rs.getString("apellidos"));
+                lista.add(p);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return lista;
+}
+
+// En ProformaDAO.java
+
+// 1. Listar pendientes para el select
+public List<Proforma> listarPendientesDePago() {
+    List<Proforma> lista = new ArrayList<>();
+    String sql = "SELECT p.id_proforma, p.monto_estimado, c.nombres, c.apellidos " +
+                 "FROM proforma p " +
+                 "JOIN clientes c ON p.id_cliente = c.dni " +
+                 "WHERE p.estado = 'PENDIENTE' OR p.estado = 'ACEPTADA'";
+
+    try (Connection conn = ConexionDB.getInstancia().getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            Proforma p = new Proforma();
+            p.setIdProforma(rs.getString("id_proforma"));
+            p.setMontoEstimado(rs.getDouble("monto_estimado"));
+            p.setNombreCliente(rs.getString("nombres") + " " + rs.getString("apellidos"));
+            lista.add(p);
+        }
+    } catch (SQLException e) { e.printStackTrace(); }
+    return lista;
+}
+
+// 2. Cambiar estado a PAGADO
+public boolean cambiarEstado(String idProforma, String nuevoEstado) {
+    String sql = "UPDATE proforma SET estado = ? WHERE id_proforma = ?";
+    try (Connection conn = ConexionDB.getInstancia().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, nuevoEstado);
+        ps.setString(2, idProforma);
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) { return false; }
+}
 }

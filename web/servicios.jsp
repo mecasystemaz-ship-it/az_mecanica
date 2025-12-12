@@ -159,7 +159,7 @@
             .alert-danger {
                 background: #f8d7da;
                 color: #721c24;
-            }
+            }   
 
             .grid2 {
                 display: grid;
@@ -178,7 +178,10 @@
                     <img src="${pageContext.request.contextPath}/imgs/logo.png" class="logo" alt="AZ">
                     <span class="brand__label">Servicios</span>
                 </div>
-                <a class="btn btn-outline" href="${pageContext.request.contextPath}/LogoutServlet">Cerrar sesión</a>
+                    
+                    <jsp:include page="saludoadmin.jsp" />
+                
+                <a class="btn btn-outline" href="LogoutServlet">Cerrar sesión</a>
             </div>
         </header>
 
@@ -259,56 +262,64 @@
 
         <!-- Modal CRUD -->
         <div id="modal-crud-service" class="modal hidden">
-            <div class="modal-card">
-                <h3 id="modal-title">Registrar Nuevo Servicio</h3>
+    <div class="modal-card">
+        <h3 id="modal-title">Registrar Nuevo Servicio</h3>
 
-                <form method="post" action="${pageContext.request.contextPath}/servicios/guardar" id="form-crud-service">
+        <form method="post" action="${pageContext.request.contextPath}/servicios/guardar" id="form-crud-service">
 
-                    <input type="hidden" id="crud-id-servicio" name="id_servicio">
+            <input type="hidden" id="crud-id-servicio" name="id_servicio">
 
-                    <div class="grid2">
-                        <div>
-                            <label>Nombre *</label>
-                            <input type="text" name="nombre" id="crud-nombre" required>
-                        </div>
-
-                        <div>
-                            <label>Categoría</label>
-                            <select name="categoria" id="crud-categoria">
-                                <option value="">Seleccione</option>
-                                <option>Mantenimiento</option>
-                                <option>Diagnóstico</option>
-                                <option>Reparación</option>
-                                <option>Otro</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid2">
-                        <div>
-                            <label>Precio (S/)</label>
-                            <input type="number" step="0.01" id="crud-precio" name="precio" required>
-                        </div>
-
-                        <div>
-                            <label>Tiempo estimado</label>
-                            <input type="text" id="crud-tiempo" name="tiempo_estimado">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label>Descripción</label>
-                        <textarea name="descripcion" id="crud-descripcion"></textarea>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn" data-close>Cancelar</button>
-                        <button type="submit" id="crud-submit-btn" class="btn btn-primary">Registrar</button>
-                    </div>
-
-                </form>
+            <div style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px dashed #ccc;">
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">⚡ Carga rápida (Opcional)</label>
+                <select id="select-predefinido" style="width: 100%;">
+                    <option value="">-- Seleccionar de la lista --</option>
+                    </select>
             </div>
-        </div>
+
+            <div class="grid2">
+                <div>
+                    <label>Nombre *</label>
+                    <input type="text" name="nombre" id="crud-nombre" required placeholder="Ej: Cambio de Aceite">
+                </div>
+
+                <div>
+                    <label>Categoría</label>
+                    <select name="categoria" id="crud-categoria">
+                        <option value="">Seleccione</option>
+                        <option>Mantenimiento</option>
+                        <option>Diagnóstico</option>
+                        <option>Reparación</option>
+                        <option>Sistema Eléctrico</option> <option>Frenos</option>
+                        <option>Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid2">
+                <div>
+                    <label>Precio (S/)</label>
+                    <input type="number" step="0.01" id="crud-precio" name="precio" required placeholder="0.00">
+                </div>
+
+                <div>
+                    <label>Tiempo estimado</label>
+                    <input type="text" id="crud-tiempo" name="tiempo_estimado" placeholder="Ej: 2 horas">
+                </div>
+            </div>
+
+            <div>
+                <label>Descripción</label>
+                <textarea name="descripcion" id="crud-descripcion" placeholder="Detalles del servicio..."></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn" data-close>Cancelar</button>
+                <button type="submit" id="crud-submit-btn" class="btn btn-primary">Registrar</button>
+            </div>
+
+        </form>
+    </div>
+</div>
 
         <!-- Modal Delete -->
         <div id="modal-delete" class="modal hidden">
@@ -325,64 +336,113 @@
         </div>
 
         <script>
-            const qs = s => document.querySelector(s);
-            const open = m => m.classList.remove("hidden");
-            const close = m => m.classList.add("hidden");
+    const qs = s => document.querySelector(s);
+    const open = m => m.classList.remove("hidden");
+    const close = m => m.classList.add("hidden");
 
-            document.querySelectorAll("[data-close]").forEach(btn =>
-                btn.addEventListener("click", e => close(e.target.closest(".modal")))
-            );
+    // --- BASE DE DATOS LOCAL DE SERVICIOS ---
+    const serviciosPredefinidos = [
+        { nombre: "Cambio de Aceite y Filtro", cat: "Mantenimiento", precio: 80.00, tiempo: "45 min", desc: "Cambio de aceite de motor sintético y reemplazo de filtro de aceite." },
+        { nombre: "Afinamiento de Motor", cat: "Mantenimiento", precio: 250.00, tiempo: "3 horas", desc: "Limpieza de inyectores, cambio de bujías y filtros de aire/combustible." },
+        { nombre: "Mantenimiento de Frenos", cat: "Frenos", precio: 120.00, tiempo: "2 horas", desc: "Limpieza, regulación y cambio de pastillas de freno (delanteras/traseras)." },
+        { nombre: "Escaneo Electrónico (Scanner)", cat: "Diagnóstico", precio: 50.00, tiempo: "30 min", desc: "Diagnóstico computarizado de fallas con scanner OBD2." },
+        { nombre: "Alineación y Balanceo", cat: "Mantenimiento", precio: 90.00, tiempo: "1.5 horas", desc: "Alineación de dirección 3D y balanceo de 4 ruedas." },
+        { nombre: "Cambio de Kit de Embrague", cat: "Reparación", precio: 450.00, tiempo: "5 horas", desc: "Bajada de caja y reemplazo de disco, plato y collarín. (No incluye repuestos)" },
+        { nombre: "Limpieza de Sistema de Inyección", cat: "Mantenimiento", precio: 180.00, tiempo: "2.5 horas", desc: "Limpieza profunda de inyectores y cuerpo de aceleración." },
+        { nombre: "Reparación de Suspensión", cat: "Reparación", precio: 200.00, tiempo: "4 horas", desc: "Cambio de amortiguadores, trapecios y terminales de dirección." },
+        { nombre: "Recarga de Aire Acondicionado", cat: "Mantenimiento", precio: 150.00, tiempo: "1 hora", desc: "Vacío del sistema, prueba de fugas y recarga de gas refrigerante." },
+        { nombre: "Cambio de Correa de Distribución", cat: "Reparación", precio: 350.00, tiempo: "6 horas", desc: "Reemplazo preventivo del kit de distribución y bomba de agua." }
+    ];
 
-            const modal = qs("#modal-crud-service");
-            const form = qs("#form-crud-service");
-            const title = qs("#modal-title");
-            const submitBtn = qs("#crud-submit-btn");
+    // Llenar el select al cargar la página
+    const selectPre = qs("#select-predefinido");
+    serviciosPredefinidos.forEach((s, index) => {
+        const option = document.createElement("option");
+        option.value = index; // Usamos el índice para buscarlo rápido
+        option.textContent = s.nombre;
+        selectPre.appendChild(option);
+    });
 
-            const resetModal = () => {
-                form.reset();
-                qs("#crud-id-servicio").value = "";
-                title.textContent = "Registrar Nuevo Servicio";
-                submitBtn.textContent = "Registrar";
-            };
+    // Evento: Cuando el usuario elige un servicio de la lista
+    selectPre.addEventListener("change", function() {
+        const idx = this.value;
+        if (idx !== "") {
+            const s = serviciosPredefinidos[idx];
+            qs("#crud-nombre").value = s.nombre;
+            // Intentar seleccionar la categoría si existe en el select, si no, dejarla o poner 'Otro'
+            const catOption = Array.from(qs("#crud-categoria").options).find(opt => opt.value === s.cat);
+            qs("#crud-categoria").value = catOption ? s.cat : "";
+            
+            qs("#crud-precio").value = s.precio;
+            qs("#crud-tiempo").value = s.tiempo;
+            qs("#crud-descripcion").value = s.desc;
+        } else {
+            // Si vuelve a "Seleccionar...", limpiamos (opcional)
+            qs("#form-crud-service").reset();
+            qs("#crud-id-servicio").value = ""; // Mantener limpio el ID
+        }
+    });
 
-            qs("#btn-open-create").addEventListener("click", () => {
-                resetModal();
-                open(modal);
-            });
+    // --- FUNCIONALIDAD EXISTENTE ---
 
-            // EDITAR
-            document.addEventListener("click", e => {
-                const btn = e.target.closest("[data-edit]");
-                if (!btn)
-                    return;
+    document.querySelectorAll("[data-close]").forEach(btn =>
+        btn.addEventListener("click", e => close(e.target.closest(".modal")))
+    );
 
-                const id = btn.dataset.edit;
-                const row = qs("#servicio-" + id);
+    const modal = qs("#modal-crud-service");
+    const form = qs("#form-crud-service");
+    const title = qs("#modal-title");
+    const submitBtn = qs("#crud-submit-btn");
 
-                qs("#crud-id-servicio").value = row.dataset.id;
-                qs("#crud-nombre").value = row.dataset.nombre;
-                qs("#crud-categoria").value = row.dataset.categoria;
-                qs("#crud-precio").value = row.dataset.precio;
-                qs("#crud-tiempo").value = row.dataset.tiempo;
-                qs("#crud-descripcion").value = row.dataset.descripcion;
+    const resetModal = () => {
+        form.reset();
+        qs("#crud-id-servicio").value = "";
+        qs("#select-predefinido").value = ""; // Resetear también el select especial
+        title.textContent = "Registrar Nuevo Servicio";
+        submitBtn.textContent = "Registrar";
+    };
 
-                title.textContent = "Modificar Servicio ID: " + id;
-                submitBtn.textContent = "Guardar Cambios";
+    qs("#btn-open-create").addEventListener("click", () => {
+        resetModal();
+        open(modal);
+    });
 
-                open(modal);
-            });
+    // EDITAR
+    document.addEventListener("click", e => {
+        const btn = e.target.closest("[data-edit]");
+        if (!btn) return;
 
-            // ELIMINAR
-            document.addEventListener("click", e => {
-                const btn = e.target.closest("[data-delete]");
-                if (!btn)
-                    return;
+        const id = btn.dataset.edit;
+        const row = qs("#servicio-" + id);
 
-                qs("#delete-id").value = btn.dataset.delete;
-                open(qs("#modal-delete"));
-            });
+        resetModal(); // Limpiamos primero
 
-        </script>
+        qs("#crud-id-servicio").value = row.dataset.id;
+        qs("#crud-nombre").value = row.dataset.nombre;
+        qs("#crud-categoria").value = row.dataset.categoria;
+        qs("#crud-precio").value = row.dataset.precio;
+        qs("#crud-tiempo").value = row.dataset.tiempo;
+        qs("#crud-descripcion").value = row.dataset.descripcion;
+
+        // En modo edición, quizás quieras bloquear el select de carga rápida para no confundir
+        qs("#select-predefinido").value = ""; 
+        
+        title.textContent = "Modificar Servicio ID: " + id;
+        submitBtn.textContent = "Guardar Cambios";
+
+        open(modal);
+    });
+
+    // ELIMINAR
+    document.addEventListener("click", e => {
+        const btn = e.target.closest("[data-delete]");
+        if (!btn) return;
+
+        qs("#delete-id").value = btn.dataset.delete;
+        open(qs("#modal-delete"));
+    });
+
+</script>
 
     </body>
 </html>

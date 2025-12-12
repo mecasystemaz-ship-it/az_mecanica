@@ -188,4 +188,54 @@ public class CitaDAO {
         }
         return lista;
     }
+    
+    // ========================================================================
+    // --- NUEVO MÉTODO AGREGADO PARA EL MÓDULO DE PAGOS ---
+    // ========================================================================
+    public List<Cita> listarPendientesDePago() {
+        List<Cita> lista = new ArrayList<>();
+        
+        // Unimos tabla Clientes para el nombre y tabla Servicio para el nombre Y PRECIO
+        String sql = "SELECT c.id_cita, c.fecha, c.hora, c.placa_vehiculo, c.estado, " +
+                     "cl.nombres, cl.apellidos, " +
+                     "s.nombre AS nombre_servicio, s.precio " +
+                     "FROM cita c " +
+                     "INNER JOIN clientes cl ON c.dni_cliente = cl.dni " +
+                     "INNER JOIN servicio s ON c.id_servicio = s.id_servicio " +
+                     "WHERE c.estado IN ('PENDIENTE', 'CONFIRMADA') " + // Solo las que se pueden pagar
+                     "ORDER BY c.fecha ASC";
+
+        try (Connection conn = ConexionDB.getInstancia().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Cita c = new Cita();
+                
+                // Datos básicos de la cita
+                c.setId(rs.getInt("id_cita"));
+                c.setFecha(rs.getDate("fecha").toLocalDate());
+                c.setHora(rs.getTime("hora").toLocalTime());
+                c.setPlacaVehiculo(rs.getString("placa_vehiculo"));
+                c.setEstado(rs.getString("estado"));
+
+                // Datos Cruzados (Clientes)
+                String nombreCompleto = rs.getString("nombres");
+                if (rs.getString("apellidos") != null) {
+                    nombreCompleto += " " + rs.getString("apellidos");
+                }
+                c.setNombreCliente(nombreCompleto);
+
+                // Datos Cruzados (Servicios + PRECIO)
+                c.setNombreServicio(rs.getString("nombre_servicio"));
+                c.setPrecio(rs.getDouble("precio")); // Importante: Guardamos el precio en el objeto
+
+                lista.add(c);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar pendientes de pago: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }

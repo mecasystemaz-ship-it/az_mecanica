@@ -136,4 +136,17 @@ public class Cita {
     public void setNombreServicio(String nombreServicio) {
         this.nombreServicio = nombreServicio;
     }
+    
+    // --- NUEVO ATRIBUTO PARA PAGOS ---
+    private double precio;
+    
+    
+    // --- NUEVOS MÉTODOS PARA PAGOS ---
+    public double getPrecio() { 
+        return precio; 
+    }
+
+    public void setPrecio(double precio) { 
+        this.precio = precio; 
+    }
 }

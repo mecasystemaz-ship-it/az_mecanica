@@ -383,7 +383,8 @@ input:disabled, select:disabled{
 .topbar .tabs a.active { background: #f6c200; color:#111; border-radius: 6px; padding: .35rem .7rem; }
 
 /* BOTONES */
-.btn { padding: .55rem .9rem; border-radius: 10px; border: 1px solid #d9d9d9; background:#fff; cursor:pointer; }
+.btn { padding: .55rem .9rem; border-radius: 10px; border: 1px solid #d9d9d9; ; cursor:pointer; } /*background:#fff*/
+
 .btn:hover { filter: brightness(0.97); }
 .btn-primary { background:#f6c200; border-color:#f6c200; color:#111; font-weight:600; }
 .btn-danger { background:#e53935; border-color:#e53935; color:#fff; }
@@ -391,6 +392,14 @@ input:disabled, select:disabled{
 .btn-round { border-radius: 999px; }
 .link { color:#111; text-decoration:none; }
 .link:hover { text-decoration:underline; }
+
+/* CLASE NECESARIA PARA OCULTAR EL MODAL */
+.az-hide {
+    /* Es la manera más segura de forzar la ocultación del elemento */
+    display: none !important;
+}
+
+
 
 /* CHIPS / FILTROS CABECERA */
 .toolbar { display:flex; justify-content:space-between; align-items:center; margin: 1rem 0; }
@@ -435,7 +444,8 @@ input:disabled, select:disabled{
 .field { display:flex; flex-direction:column; gap:.35rem; margin: .65rem 1rem; }
 .field > label { font-size:.9rem; color:#333; }
 .field > input, .field > select, .field > textarea {
-  padding:.55rem .6rem; border-radius:8px; border:1px solid #d7d7d7; background:#fff;
+  padding:.55rem .6rem; border-radius:8px; border:1px solid #d7d7d7; ;
+/*  background:#fff*/
 }
 .field.search input { width:100%; border-radius: 12px; }
 
@@ -639,231 +649,6 @@ input:disabled, select:disabled{
   filter: none;
   opacity: .85;
 }
-  /*CAMBIOS*/
-  
-  /*29/11/2025*/
-  /* ============ AZ ADD-ON v2 (NO elimina nada, solo suma) ============ */
-
-/* helpers */
-.az-hide{display:none!important}
-.center{text-align:center}
-.muted{opacity:.75}
-.az-grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
-.az-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
-@media(max-width:768px){.az-grid2,.az-grid3{grid-template-columns:1fr}}
-
-.topbar .tabs{display:flex;gap:1rem;align-items:center}
-.topbar .tabs a.active{background:#f6c200;color:#111;border-radius:12px;padding:.45rem .8rem}
-
-/* chips / filtros */
-.az-toolbar{display:flex;justify-content:space-between;align-items:center;margin:1rem 0 .6rem}
-.az-chips{display:flex;gap:.45rem;list-style:none;padding:0;margin:0}
-.az-chip{background:#222;color:#eee;border:0;border-radius:999px;padding:.42rem .7rem;cursor:pointer}
-.az-chip span{opacity:.75;margin-left:.25rem}
-.az-chip--seg{background:#f6c200;color:#111;font-weight:700}
-.az-chip--seg+ .az-chip--seg{margin-left:.25rem}
-.az-chip.az-chip--muted{background:transparent;color:#aaa;border:1px dashed #666}
-
-/* tabla */
-.az-tablewrap{background:#2b2b2b;border-radius:12px;padding:.5rem}
-.table.flat thead th{background:#1f1f1f;color:#f5f5f5;border-bottom:3px solid #f6c200}
-.table.flat tbody td{color:#eaeaea;border-bottom:1px solid rgba(255,255,255,.08)}
-.table.flat tbody tr:hover{background:rgba(255,255,255,.035)}
-
-/* icon buttons */
-.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#333;color:#f5f5f5;border:1px solid #3f3f3f;cursor:pointer}
-.icon-btn:hover{background:#3a3a3a}
-.icon-btn.danger{background:#3b1b1b;border-color:#6b1b1b}
-.icon-btn.danger:hover{background:#5a2323}
-
-/* modal */
-.az-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:60}
-.az-modal__card{width:min(900px,96vw);background:#f7f7f7;color:#111;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.45);overflow:hidden}
-.az-modal__card--sm{width:min(520px,96vw)}
-.az-modal__head{background:#ededed;padding:.9rem 1rem;border-bottom:1px solid #ddd}
-.az-modal__foot{display:flex;gap:.6rem;justify-content:flex-end;padding:.9rem 1rem;border-top:1px solid #ddd}
-.az-modal__foot--split{justify-content:space-between}
-.field{display:flex;flex-direction:column;gap:.35rem;margin:.65rem 1rem}
-.field>label{font-size:.9rem;color:#333}
-.field>input,.field>select,.field>textarea{padding:.55rem .6rem;border-radius:9px;border:1px solid #d7d7d7;background:#fff}
-.field.search input{border-radius:12px}
-.panel{margin:.5rem 1rem 1rem;border:1px solid #ddd;border-radius:10px;background:#fff}
-.panel-title{padding:.7rem 1rem;font-weight:600;background:#f2f2f2;border-bottom:1px solid #e6e6e6}
-.list-selectable{padding:.7rem 1rem;display:flex;flex-direction:column;gap:.55rem}
-.row-offer{display:grid;grid-template-columns:1fr 120px;gap:.7rem;align-items:center;padding:.5rem;border:1px solid #e7e7e7;border-radius:10px;background:#fafafa}
-.row-offer .inline{width:100%}
-
-/* calendario */
-.az-calbar{display:flex;justify-content:space-between;align-items:center;margin:.6rem 0}
-.az-calbar__left{display:flex;align-items:center;gap:.5rem}
-.legend{color:#e6e6e6}
-.dot{width:.6rem;height:.6rem;border-radius:50%;display:inline-block;margin-right:.35rem;vertical-align:middle}
-.dot-green{background:#1bb55c}.dot-yellow{background:#f6c200}.dot-gray{background:#9aa1a7}
-.az-gridcal{display:grid;grid-template-columns:1.2fr .8fr;gap:1.2rem;align-items:start}
-.calendar-box{background:#fff;border-radius:12px;padding:.8rem;box-shadow:0 10px 30px rgba(0,0,0,.18)}
-.table.calendar thead th{background:#fafafa;color:#333;border-bottom:1px solid #eee}
-.table.calendar tbody td{vertical-align:top;background:#fff;color:#333;height:115px;width:14.28%;border:1px solid #eee;position:relative;padding:.35rem}
-.table.calendar tbody td.is-other{background:#f6f6f6;color:#9aa1a7}
-.cell-body{margin-top:.35rem;display:flex;flex-direction:column;gap:.35rem}
-.event{cursor:pointer}
-.event-badge{display:inline-block;font-size:.85rem;line-height:1;padding:.35rem .5rem;border-radius:6px;font-weight:700;color:#111;border:1px solid transparent}
-.PENDIENTE{background:#f6c200;border-color:#e6b400;color:#111}
-.CONFIRMADA{background:#1bb55c;border-color:#159a4d;color:#fff}
-.CANCELADA{background:#9aa1a7;border-color:#87909a;color:#fff}
-.sidepanel{background:#fff;border-radius:12px;min-height:520px;box-shadow:0 10px 30px rgba(0,0,0,.18);transform:translateX(8px);opacity:0;transition:all .25s ease;pointer-events:none;padding:.6rem}
-.sidepanel.open{transform:translateX(0);opacity:1;pointer-events:auto}
-.panel-card{padding:.7rem}
-.panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
-.field.readonly input{background:#f3f3f3;color:#444}
-
-@media(max-width:1100px){.az-gridcal{grid-template-columns:1fr}.sidepanel{order:-1}}
 
 
 
-/* CAMBIOSSS UHora*/
-/* ====== CALENDARIO – VISTAS SEMANA/DÍA (add-on v3) ====== */
-/* contenedores */
-.az-weekwrap, .az-daywrap { width:100%; }
-.az-weekhead, .az-dayhead {
-  display:grid; grid-template-columns: 90px repeat(7, 1fr); gap:0; align-items:stretch;
-  border:1px solid #eee; border-bottom:none; background:#fafafa; border-radius:12px 12px 0 0; overflow:hidden;
-}
-.az-dayhead { grid-template-columns: 90px 1fr; }
-.az-weekbody, .az-daybody { border:1px solid #eee; border-top:none; border-radius:0 0 12px 12px; overflow:hidden; }
-.az-row { display:grid; grid-template-columns: 90px repeat(7, 1fr); }
-.az-daybody .az-row { grid-template-columns: 90px 1fr; }
-.az-col-time { background:#f7f7f7; color:#666; border-right:1px solid #eee; padding:.5rem .6rem; font-weight:600; }
-.az-col-day, .az-slot { padding:.45rem; border-right:1px solid #eee; border-top:1px solid #eee; min-height:48px; background:#fff; }
-.az-weekhead .az-col-day { text-align:center; padding:.55rem; font-weight:700; border-right:1px solid #eee; }
-.az-weekhead .az-col-day:last-child, .az-row > .az-slot:last-child { border-right:none; }
-.az-dayhead .az-col-day { padding:.55rem; font-weight:700; }
-
-/* evento en celda horaria */
-.az-evt {
-  position: relative;
-  display:flex; flex-direction:column; gap:.15rem;
-  padding:.35rem .45rem; border-radius:8px; font-size:.9rem; line-height:1.1;
-  border:1px solid transparent; cursor:pointer; width:100%;
-}
-.az-evt strong { display:block; font-size:.85rem; }
-.az-evt span { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-/* colores por estado (ya coinciden con las de Mes) */
-.az-evt.PENDIENTE   { background:#f6c200; border-color:#e6b400; color:#111; }
-.az-evt.CONFIRMADA  { background:#1bb55c; border-color:#159a4d; color:#fff; }
-.az-evt.CANCELADA   { background:#9aa1a7; border-color:#87909a; color:#fff; }
-
-/* pequeños ajustes de barra superior */
-.az-calhdr { margin-bottom:.5rem}
-
-
-
-/*6/11/2025*/
-
-/*FORMULARIOS*/
-/* ===============================================
-   FIX GLOBAL — Texto negro en formularios claros
-   =============================================== */
-input, select, textarea {
-  color: #000 !important;
-  background-color: #fff !important;
-  border: 1px solid #bbb !important;
-}
-input:focus, select:focus, textarea:focus {
-  color: #000 !important;
-  background-color: #fff !important;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 0 2px rgba(246,194,0,0.25);
-  outline: none;
-}
-select option {
-  color: #000 !important;
-  background-color: #fff !important;
-}
-/* Placeholders visibles */
-input::placeholder, textarea::placeholder {
-  color: #666 !important;
-  opacity: 1;
-}
-/* ======================================================
-   Iconos visibles en campos de fecha/hora (mejorados)
-   ====================================================== */
-input[type="date"],
-input[type="time"] {
-  color-scheme: light;          /* fuerza esquema claro */
-  -webkit-appearance: auto;     /* restaura iconos nativos */
-  appearance: auto;
-  padding-right: 2.2rem;        /* deja espacio para el icono */
-}
-/* Íconos visibles y clickeables */
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="time"]::-webkit-calendar-picker-indicator {
-  display: block;
-  filter: none !important;       /* evita invertir color */
-  opacity: 0.85 !important;      /* visibilidad óptima */
-  cursor: pointer;
-}
-/* Compatibilidad Firefox */
-@-moz-document url-prefix() {
-  input[type="date"],
-  input[type="time"] {
-    color-scheme: light;
-    color: #000 !important;
-    background-color: #fff !important;
-  }
-}
-
-/*SERVICIOS FORM*/
-/* ==== Corrección visual para servicio-form.jsp ==== */
-.card .form {
-  max-width: 700px;      /* límite de ancho */
-  margin: 0 auto;        /* centra horizontalmente */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.az-grid2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-.field input,
-.field select,
-.field textarea {
-  width: 100%;
-}
-.form__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-@media (max-width: 768px) {
-  .az-grid2 {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ===== Banner Auxilio (alineado a las cards) ===== */
-.banner-wrapper { margin: 0.8rem 0; }
-.banner-wrapper .container {
-  width: min(1200px, 92%);
-  margin-inline: auto;
-}
-.banner-aux__img{
-  display: block;
-  width: 100% !important;
-  max-width: none !important;
-  height: auto;                     /* 🔹 altura automática según proporción */
-  object-fit: contain;              /* 🔹 mantiene proporciones, sin recorte */
-  background-color: #000;           /* 🔹 relleno negro para bordes sobrantes */
-  border: 1px solid var(--border);
-  border-radius: .5rem;
-  box-shadow: var(--shadow);
-}
-
-
-/* Responsive */
-@media (max-width: 640px){
-  .banner-aux__img { height: 200px; }
-}

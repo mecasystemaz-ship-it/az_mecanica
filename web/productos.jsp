@@ -138,14 +138,15 @@
                     <img src="${pageContext.request.contextPath}/imgs/logo.png" class="logo" alt="AZ">
                     <span class="brand__label">Inventario</span>
                 </div>
-                <a class="btn btn-outline" href="${pageContext.request.contextPath}/LogoutServlet">Cerrar sesión</a>
+                    <jsp:include page="saludoadmin.jsp" />
+                <a class="btn btn-outline" href="LogoutServlet">Cerrar sesión</a>
             </div>
         </header>
 
         <nav class="tabs">
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
             <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
-            <a href="${pageContext.request.contextPath}/pagos.jsp">Pagos</a>
+            <a href="${pageContext.request.contextPath}/pagos.html">Pagos</a>
             <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
             <a class="active" href="${pageContext.request.contextPath}/productos">Inventario</a>
             <a href="${pageContext.request.contextPath}/empleados">Empleados</a>
@@ -221,51 +222,58 @@
 
         <!-- Modal CRUD Producto -->
         <div id="modal-crud-product" class="modal hidden">
-            <div class="modal-card">
-                <h3 id="modal-title">Registrar Nuevo Producto</h3>
+    <div class="modal-card">
+        <h3 id="modal-title">Registrar Nuevo Producto</h3>
 
-                <form method="post" action="${pageContext.request.contextPath}/productos/guardar" id="form-crud-product">
-                    <input type="hidden" id="crud-id-producto" name="codProducto">
+        <form method="post" action="${pageContext.request.contextPath}/productos/guardar" id="form-crud-product">
+            <input type="hidden" id="crud-id-producto" name="codProducto">
 
-                    <div class="grid2">
-                        <div>
-                            <label>Nombre *</label>
-                            <input type="text" name="nombre" id="crud-nombre" placeholder="Ej: Aceite de motor" required>
-                        </div>
-                        <div>
-                            <label>Categoría</label>
-                            <input type="text" name="categoria" id="crud-categoria" placeholder="Ej: Lubricantes">
-                        </div>
-                    </div>
-
-                    <div class="grid2">
-                        <div>
-                            <label>Cantidad Inicial *</label>
-                            <input type="number" name="cant_inicial" id="crud-cant" min="0" required>
-                        </div>
-                        <div>
-                            <label>Costo (S/)*</label>
-                            <input type="number" step="0.01" name="costo" id="crud-costo" min="0" required>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label>Proveedor *</label>
-                        <select name="id_proveedor" id="crud-proveedor" required>
-                            <option value="">-- Seleccionar Proveedor --</option>
-                            <c:forEach var="prov" items="${listaProveedores}">
-                                <option value="${prov.ruc}">${prov.nombre} (${prov.ruc})</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline" data-close>Cancelar</button>
-                        <button type="submit" id="crud-submit-btn" class="btn btn-primary">Registrar</button>
-                    </div>
-                </form>
+            <div style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px dashed #ccc;">
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">⚡ Carga rápida (Opcional)</label>
+                <select id="select-predefinido" style="width: 100%;">
+                    <option value="">-- Seleccionar de la lista --</option>
+                    </select>
             </div>
-        </div>
+
+            <div class="grid2">
+                <div>
+                    <label>Nombre *</label>
+                    <input type="text" name="nombre" id="crud-nombre" placeholder="Ej: Aceite de motor" required>
+                </div>
+                <div>
+                    <label>Categoría</label>
+                    <input type="text" name="categoria" id="crud-categoria" placeholder="Ej: Lubricantes">
+                </div>
+            </div>
+
+            <div class="grid2">
+                <div>
+                    <label>Cantidad Inicial *</label>
+                    <input type="number" name="cant_inicial" id="crud-cant" min="0" required placeholder="0">
+                </div>
+                <div>
+                    <label>Costo (S/)*</label>
+                    <input type="number" step="0.01" name="costo" id="crud-costo" min="0" required placeholder="0.00">
+                </div>
+            </div>
+
+            <div>
+                <label>Proveedor *</label>
+                <select name="id_proveedor" id="crud-proveedor" required>
+                    <option value="">-- Seleccionar Proveedor --</option>
+                    <c:forEach var="prov" items="${listaProveedores}">
+                        <option value="${prov.ruc}">${prov.nombre} (${prov.ruc})</option>
+                    </c:forEach>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-close>Cancelar</button>
+                <button type="submit" id="crud-submit-btn" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
         <!-- Modal Delete Producto -->
         <div id="modal-delete" class="modal hidden">
@@ -283,63 +291,125 @@
         </div>
 
         <script>
-            const qs = s => document.querySelector(s);
-            const open = m => m.classList.remove("hidden");
-            const close = m => m.classList.add("hidden");
+    const qs = s => document.querySelector(s);
+    const open = m => m.classList.remove("hidden");
+    const close = m => m.classList.add("hidden");
 
-            document.querySelectorAll("[data-close]").forEach(btn =>
-                btn.addEventListener("click", e => close(e.target.closest(".modal")))
-            );
+    // --- BASE DE DATOS LOCAL DE PRODUCTOS (20 Items) ---
+    const productosPredefinidos = [
+        { nombre: "Aceite Sintético 5W-30 (Galón)", cat: "Lubricantes", costo: 120.00 },
+        { nombre: "Aceite Mineral 20W-50 (Litro)", cat: "Lubricantes", costo: 25.00 },
+        { nombre: "Filtro de Aceite Universal", cat: "Filtros", costo: 15.00 },
+        { nombre: "Filtro de Aire Motor", cat: "Filtros", costo: 35.00 },
+        { nombre: "Pastillas de Freno Cerámicas (Juego)", cat: "Frenos", costo: 85.00 },
+        { nombre: "Líquido de Frenos DOT 4 (500ml)", cat: "Fluidos", costo: 28.00 },
+        { nombre: "Refrigerante/Coolant 50/50 (Galón)", cat: "Fluidos", costo: 45.00 },
+        { nombre: "Bujía de Iridio", cat: "Encendido", costo: 40.00 },
+        { nombre: "Batería 13 Placas 12V", cat: "Eléctrico", costo: 280.00 },
+        { nombre: "Amortiguador Delantero (Gas)", cat: "Suspensión", costo: 150.00 },
+        { nombre: "Kit de Embrague (Disco+Plato+Collarín)", cat: "Transmisión", costo: 350.00 },
+        { nombre: "Correa de Distribución", cat: "Motor", costo: 90.00 },
+        { nombre: "Bomba de Agua", cat: "Motor", costo: 110.00 },
+        { nombre: "Foco H4 Halógeno", cat: "Iluminación", costo: 12.00 },
+        { nombre: "Limpiaparabrisas (Par)", cat: "Accesorios", costo: 30.00 },
+        { nombre: "Aditivo Limpia Inyectores", cat: "Aditivos", costo: 20.00 },
+        { nombre: "Grasa de Chasis (Pote)", cat: "Lubricantes", costo: 18.00 },
+        { nombre: "Terminal de Dirección", cat: "Dirección", costo: 65.00 },
+        { nombre: "Rodaje de Rueda", cat: "Suspensión", costo: 75.00 },
+        { nombre: "Empaquetadura de Culata", cat: "Motor", costo: 55.00 }
+    ];
 
-            const modal = qs("#modal-crud-product");
-            const form = qs("#form-crud-product");
-            const title = qs("#modal-title");
-            const submitBtn = qs("#crud-submit-btn");
+    // Llenar el select al cargar la página
+    const selectPre = qs("#select-predefinido");
+    // Ordenamos alfabéticamente para facilitar la búsqueda
+    productosPredefinidos.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-            const resetModal = () => {
-                form.reset();
-                qs("#crud-id-producto").value = "";
-                title.textContent = "Registrar Nuevo Producto";
-                submitBtn.textContent = "Registrar";
-            };
+    productosPredefinidos.forEach((p, index) => {
+        const option = document.createElement("option");
+        option.value = index; 
+        option.textContent = p.nombre;
+        selectPre.appendChild(option);
+    });
 
-            qs("#btn-open-create").addEventListener("click", () => {
-                resetModal();
-                open(modal);
-            });
+    // Evento: Cuando el usuario elige un producto de la lista
+    selectPre.addEventListener("change", function() {
+        const idx = this.value;
+        if (idx !== "") {
+            const p = productosPredefinidos[idx];
+            qs("#crud-nombre").value = p.nombre;
+            qs("#crud-categoria").value = p.cat;
+            qs("#crud-costo").value = p.costo;
+            
+            // Enfocar en cantidad para que el usuario ingrese stock
+            qs("#crud-cant").focus();
+        } else {
+            // Limpiar si vuelve a "Seleccionar..."
+            qs("#crud-nombre").value = "";
+            qs("#crud-categoria").value = "";
+            qs("#crud-costo").value = "";
+        }
+    });
 
-            // EDITAR
-            document.addEventListener("click", e => {
-                const btn = e.target.closest("[data-edit]");
-                if (!btn)
-                    return;
+    // --- FUNCIONALIDAD EXISTENTE ---
 
-                const id = btn.dataset.edit;
-                const row = qs("#producto-" + id);
+    document.querySelectorAll("[data-close]").forEach(btn =>
+        btn.addEventListener("click", e => close(e.target.closest(".modal")))
+    );
 
-                qs("#crud-id-producto").value = row.dataset.id;
-                qs("#crud-nombre").value = row.dataset.nombre;
-                qs("#crud-categoria").value = row.dataset.categoria;
-                qs("#crud-cant").value = row.dataset.cant;
-                qs("#crud-costo").value = row.dataset.costo;
-                qs("#crud-proveedor").value = row.dataset.proveedor;
+    const modal = qs("#modal-crud-product");
+    const form = qs("#form-crud-product");
+    const title = qs("#modal-title");
+    const submitBtn = qs("#crud-submit-btn");
 
-                title.textContent = "Modificar Producto ID: " + id;
-                submitBtn.textContent = "Guardar Cambios";
+    const resetModal = () => {
+        form.reset();
+        qs("#crud-id-producto").value = "";
+        qs("#select-predefinido").value = ""; 
+        title.textContent = "Registrar Nuevo Producto";
+        submitBtn.textContent = "Registrar";
+    };
 
-                open(modal);
-            });
+    qs("#btn-open-create").addEventListener("click", () => {
+        resetModal();
+        open(modal);
+    });
 
-            // ELIMINAR
-            document.addEventListener("click", e => {
-                const btn = e.target.closest("[data-delete]");
-                if (!btn)
-                    return;
+    // EDITAR
+    document.addEventListener("click", e => {
+        const btn = e.target.closest("[data-edit]");
+        if (!btn) return;
 
-                qs("#delete-id").value = btn.dataset.delete;
-                open(qs("#modal-delete"));
-            });
-        </script>
+        const id = btn.dataset.edit;
+        const row = qs("#producto-" + id);
+
+        resetModal(); // Limpiamos primero
+
+        qs("#crud-id-producto").value = row.dataset.id;
+        qs("#crud-nombre").value = row.dataset.nombre;
+        qs("#crud-categoria").value = row.dataset.categoria;
+        qs("#crud-cant").value = row.dataset.cant;
+        qs("#crud-costo").value = row.dataset.costo;
+        qs("#crud-proveedor").value = row.dataset.proveedor;
+
+        // En modo edición, limpiamos el select rápido para no confundir
+        qs("#select-predefinido").value = "";
+
+        title.textContent = "Modificar Producto ID: " + id;
+        submitBtn.textContent = "Guardar Cambios";
+
+        open(modal);
+    });
+
+    // ELIMINAR
+    document.addEventListener("click", e => {
+        const btn = e.target.closest("[data-delete]");
+        if (!btn) return;
+
+        qs("#delete-id").value = btn.dataset.delete;
+        open(qs("#modal-delete"));
+    });
+
+</script>
 
     </body>
 </html>

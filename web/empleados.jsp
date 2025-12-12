@@ -209,14 +209,15 @@
                     <img src="${pageContext.request.contextPath}/imgs/logo.png" class="logo" alt="AZ">
                     <span class="brand__label">Empleados</span>
                 </div>
-                <a class="btn btn-outline" href="${pageContext.request.contextPath}/login.jsp">Cerrar sesión</a>
+                    <jsp:include page="saludoadmin.jsp" />
+                <a class="btn btn-outline" href="LogoutServlet">Cerrar sesión</a>
             </div>
         </header>
 
         <nav class="tabs">
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
             <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
-            <a href="${pageContext.request.contextPath}/pagos.jsp">Pagos</a>
+            <a href="${pageContext.request.contextPath}/pagos.html">Pagos</a>
             <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
             <a href="${pageContext.request.contextPath}/productos">Inventario</a>
             <a class="active" href="${pageContext.request.contextPath}/empleados">Empleados</a>

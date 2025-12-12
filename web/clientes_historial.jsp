@@ -4,14 +4,14 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%
-    // 1. SEGURIDAD: Verificar sesión y rol
+    // 1. SEGURIDAD: Verificar sesión y rol de ADMIN
     String rolGuard = (String) session.getAttribute("rol");
     if (rolGuard == null || !"ADMIN".equalsIgnoreCase(rolGuard)) {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
     
-    // 2. SEGURIDAD: Evitar caché
+    // 2. SEGURIDAD: Evitar que el navegador guarde caché de esta página
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setHeader("Pragma", "no-cache");
     response.setDateHeader("Expires", 0);
@@ -21,7 +21,7 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>AZ Mecánica | Clientes</title>
+        <title>AZ Mecánica | Historial Clientes</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estiloM.css?v=<%=System.currentTimeMillis()%>">
     </head>
@@ -32,14 +32,20 @@
             <div class="container topbar__row">
                 <div class="brand">
                     <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="AZ" class="logo">
-                    <span class="brand__label">Clientes</span>
+                    <span class="brand__label">Historial de Clientes</span>
                 </div>
+                
                 <jsp:include page="saludoadmin.jsp" />
-                <a class="btn btn-outline" href="LogoutServlet">Cerrar sesión</a>
+                
+                <a class="btn btn-outline" href="${pageContext.request.contextPath}/LogoutServlet">Cerrar sesión</a>
             </div>
         </header>
 
         <nav class="tabs">
+            <a href="${pageContext.request.contextPath}/clientes" style="font-weight: bold; border: 1px solid #444;">
+                ← Volver a Gestión
+            </a>
+            
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
             <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
             <a href="${pageContext.request.contextPath}/pagos.html">Pagos</a>
@@ -53,95 +59,17 @@
         </nav>
 
         <main class="container">
-
-            <c:if test="${not empty sessionScope.mensajeExito}">
-                <div class="alert alert-success" style="background:#d4edda; color:#155724; padding:10px; margin-bottom:15px; border-radius:5px;">
-                    ${sessionScope.mensajeExito}
-                </div>
-                <c:remove var="mensajeExito" scope="session"/>
-            </c:if>
-            <c:if test="${not empty sessionScope.mensajeError}">
-                <div class="alert alert-danger" style="background:#f8d7da; color:#721c24; padding:10px; margin-bottom:15px; border-radius:5px;">
-                    ${sessionScope.mensajeError}
-                </div>
-                <c:remove var="mensajeError" scope="session"/>
-            </c:if>
-
-            <section class="card" id="ultimos">
+            
+            <section class="card" id="historial" style="margin-top: 20px;">
                 <div class="section-head">
-                    <h2>Gestión Rápida (Últimos Registros)</h2>
-                     <a class="btn btn-primary" href="cliente-form.jsp?action=create">+ Registrar cliente</a>
-                </div>
-
-                <div class="datatable-wrapper">
-                    <table class="datatable">
-                        <thead>
-                            <tr>
-                                <th>Nombre Cliente</th>
-                                <th>Telefono</th>
-                                <th>Correo</th>
-                                <th>Direccion</th>
-<!--                                <th>Correo</th>
-                                <th>Direccion</th>-->
-                                <th>DNI</th>
-                                <th class="ta-center">Acciones</th> </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="cliente" items="${listaClientes}">
-                                <tr data-id="${cliente.dni}">
-                                    <%-- Usamos Nombres y Apellidos concatenados para el campo Cliente --%>
-                                    <td>${cliente.nombres} ${cliente.apellidos}</td>
-
-                                    <%-- Campos de Servicio (vienen directamente del DAO) --%>
-
-                                    <td><span class="tag">${cliente.telefono}</span></td>
-                                    <td>${cliente.correo}</td> 
-                                    <td>${cliente.direccion}</td>
-
-                                    <%-- NOTA: Debes agregar la Fecha y Monto a tu Modelo/BD --%>
-                                    <%--  <td>N/A</td> <%-- Fecha (aún no existe en el modelo) --%>
-                                    <%-- <td><span class="money">S/ N/A</span></td> <%-- Monto (aún no existe en el modelo) --%>
-
-                                    <td>${cliente.dni}</td>
-
-                                    <td class="ta-center">
-                                        <%-- 🛑 CORRECCIÓN: Apuntamos al SERVLET (/clientes) para que cargue los datos --%>
-                                        <a class="chip" title="Ver" 
-                                           href="${pageContext.request.contextPath}/clientes?action=view&dni=${cliente.dni}">👁</a>
-                                        <a class="chip" title="Editar" 
-                                           href="${pageContext.request.contextPath}/clientes?action=edit&dni=${cliente.dni}">✏</a>
-
-                                        <%-- Formulario de eliminar (esto ya funcionaba bien) --%>
-                                        <form method="POST" action="${pageContext.request.contextPath}/clientes/eliminar" style="display:inline-block;">
-                                            <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="dni" value="${cliente.dni}">
-                                            <button class="chip danger" type="submit" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar a ${cliente.nombres} ${cliente.apellidos} con DNI ${cliente.dni}?');">🗑</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            <c:if test="${empty listaClientes}">
-                                <tr><td colspan="5" class="empty">No hay clientes registrados.</td></tr>
-                            </c:if>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="center mt-16">
-                    <a class="btn btn-secondary" href="#historial">Ir al Buscador Avanzado 👇</a>
-                </div>
-            </section>
-
-
-            <section class="card" id="historial" style="margin-top: 40px;">
-                <div class="section-head">
-                    <h2>Directorio Completo y Filtros</h2>
+                    <h2>Búsqueda Avanzada y Estadísticas</h2>
                     
                     <div class="filters">
                         <div class="field">
                             <label>Buscar</label>
-                            <input id="fQuery" type="text" placeholder="DNI, Nombre, Apellido...">
+                            <input id="fQuery" type="text" placeholder="DNI, Nombre, Apellido, Correo...">
                         </div>
+                        
                         <div class="field">
                             <label>Filtro Rápido</label>
                             <select id="fTipo">
@@ -150,6 +78,7 @@
                                 <option value="frecuentes">Clientes Frecuentes</option>
                             </select>
                         </div>
+                        
                         <button class="btn btn-primary" id="btnAplicar">Filtrar</button>
                         <button class="btn btn-outline" id="btnLimpiar">Limpiar</button>
                     </div>
@@ -181,7 +110,8 @@
         </footer>
 
         <script>
-            // 1. Cargar datos reales desde el servidor a JS
+            // 1. Cargar datos reales desde el servidor (Java) a un objeto JavaScript
+            // Usamos fn:escapeXml para evitar errores si los nombres tienen comillas
             const dataClientes = [
                 <c:forEach var="c" items="${requestScope.listaClientes}" varStatus="status">
                 {
@@ -190,19 +120,20 @@
                     apellidos: "${fn:escapeXml(c.apellidos)}",
                     telefono: "${fn:escapeXml(c.telefono)}",
                     correo: "${fn:escapeXml(c.correo)}",
+                    // Datos estadísticos (Si son null, ponemos 0)
                     autos: ${c.totalVehiculos != null ? c.totalVehiculos : 0},
                     citas: ${c.totalCitas != null ? c.totalCitas : 0}
                 }${!status.last ? ',' : ''}
                 </c:forEach>
             ];
 
-            // 2. Renderizar tabla (SOLO LECTURA)
+            // 2. Función para dibujar la tabla (SOLO LECTURA)
             function render(rows) {
                 const tbody = document.getElementById('bodyHistorial');
                 tbody.innerHTML = '';
 
                 if (rows.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="empty">No se encontraron resultados.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty">No se encontraron resultados para tu búsqueda.</td></tr>';
                     return;
                 }
 
@@ -210,7 +141,7 @@
                     const tr = document.createElement('tr');
                     const nombreCompleto = r.nombres + " " + r.apellidos;
 
-                    // Badges visuales
+                    // Badges visuales (Icono de auto y Estrella de frecuente)
                     let badgeAutos = r.autos > 0 
                         ? `<span style="color:#ffb800; font-weight:bold;">🚗 \${r.autos}</span>` 
                         : `<span style="color:#555">-</span>`;
@@ -238,21 +169,23 @@
                 });
             }
 
-            // 3. Filtros
+            // 3. Lógica de Filtros
             function applyFilter() {
                 const q = document.getElementById('fQuery').value.toLowerCase().trim();
                 const tipo = document.getElementById('fTipo').value;
 
                 const filtered = dataClientes.filter(r => {
+                    // Buscar coincidencia en DNI, Nombre, Apellido o Correo
                     const textMatch = 
                         r.dni.toLowerCase().includes(q) || 
                         r.nombres.toLowerCase().includes(q) || 
                         r.apellidos.toLowerCase().includes(q) ||
                         r.correo.toLowerCase().includes(q);
                     
+                    // Lógica de filtros especiales (Select)
                     let typeMatch = true;
                     if (tipo === 'con_autos') typeMatch = r.autos > 0;
-                    if (tipo === 'frecuentes') typeMatch = r.citas > 0;
+                    if (tipo === 'frecuentes') typeMatch = r.citas > 0; 
 
                     return textMatch && typeMatch;
                 });
@@ -268,10 +201,12 @@
             // Eventos
             document.getElementById('btnAplicar').addEventListener('click', applyFilter);
             document.getElementById('btnLimpiar').addEventListener('click', clearFilter);
+            
+            // Búsqueda en tiempo real al escribir
             document.getElementById('fQuery').addEventListener('keyup', applyFilter);
             document.getElementById('fTipo').addEventListener('change', applyFilter);
 
-            // Iniciar
+            // Iniciar renderizado al cargar la página
             render(dataClientes);
         </script>
 

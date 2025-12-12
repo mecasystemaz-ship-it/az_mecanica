@@ -163,14 +163,15 @@
                     <img src="${pageContext.request.contextPath}/imgs/logo.png" class="logo" alt="AZ">
                     <span class="brand__label">Proveedores</span>
                 </div>
-                <a class="btn btn-outline" href="${pageContext.request.contextPath}/login.jsp">Cerrar sesión</a>
+                    <jsp:include page="saludoadmin.jsp" />
+                <a class="btn btn-outline" href="LogoutServlet">Cerrar sesión</a>
             </div>
         </header>
 
         <nav class="tabs">
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
             <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
-            <a href="${pageContext.request.contextPath}/pagos.jsp">Pagos</a>
+            <a href="${pageContext.request.contextPath}/pagos.html">Pagos</a>
             <a class="active" href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
             <a href="${pageContext.request.contextPath}/productos">Inventario</a>
             <a href="${pageContext.request.contextPath}/empleados">Empleados</a>
@@ -238,46 +239,51 @@
 
         <!-- Modal CRUD Proveedor -->
         <div id="modal-crud-proveedor" class="modal hidden">
-            <div class="modal-card">
-                <h3 id="modal-title">Registrar Nuevo Proveedor</h3>
+    <div class="modal-card">
+        <h3 id="modal-title">Registrar Nuevo Proveedor</h3>
 
-                <form method="post" action="${pageContext.request.contextPath}/proveedores" id="form-crud-proveedor">
-                    <input type="hidden" name="action" id="crud-action" value="registrar"/>
+        <form method="post" action="${pageContext.request.contextPath}/proveedores" id="form-crud-proveedor">
+            <input type="hidden" name="action" id="crud-action" value="registrar"/>
 
-                    <div class="grid2">
-                        <div>
-                            <label>RUC *</label>
-                            <input type="text" name="ruc" id="crud-ruc" maxlength="11" required>
-                        </div>
-                        <div>
-                            <label>Nombre *</label>
-                            <input type="text" name="nombre" id="crud-nombre" maxlength="100" required>
-                        </div>
-                    </div>
-
-                    <div class="grid2">
-                        <div>
-                            <label>Teléfono</label>
-                            <input type="text" name="telefono" id="crud-telefono" maxlength="20">
-                        </div>
-                        <div>
-                            <label>Email</label>
-                            <input type="email" name="email" id="crud-email" maxlength="50">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label>Dirección</label>
-                        <input type="text" name="direccion" id="crud-direccion" maxlength="100">
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn" data-close>Cancelar</button>
-                        <button type="submit" id="crud-submit-btn" class="btn btn-primary">Registrar</button>
-                    </div>
-                </form>
+            <div class="grid2">
+                <div>
+                    <label>RUC *</label>
+                    <input type="text" name="ruc" id="crud-ruc" maxlength="11" required 
+                           placeholder="Ej: 20601234567">
+                </div>
+                <div>
+                    <label>Nombre / Razón Social *</label>
+                    <input type="text" name="nombre" id="crud-nombre" maxlength="100" required 
+                           placeholder="Ej: Repuestos Arequipa S.A.C.">
+                </div>
             </div>
-        </div>
+
+            <div class="grid2">
+                <div>
+                    <label>Teléfono</label>
+                    <input type="text" name="telefono" id="crud-telefono" maxlength="20" 
+                           placeholder="Ej: 987 654 321">
+                </div>
+                <div>
+                    <label>Email</label>
+                    <input type="email" name="email" id="crud-email" maxlength="50" 
+                           placeholder="contacto@empresa.com">
+                </div>
+            </div>
+
+            <div>
+                <label>Dirección</label>
+                <input type="text" name="direccion" id="crud-direccion" maxlength="100" 
+                       placeholder="Ej: Av. Ejército 1010, Yanahuara">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-close>Cancelar</button>
+                <button type="submit" id="crud-submit-btn" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
         <!-- Modal Eliminar -->
         <div id="modal-delete" class="modal hidden">

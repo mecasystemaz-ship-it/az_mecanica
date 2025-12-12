@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
-
 @WebServlet(name = "LogoutServlet", urlPatterns = {"/LogoutServlet"})
 public class LogoutServlet extends HttpServlet {
 
@@ -20,16 +19,24 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // 1. Obtener la sesión actual
-        HttpSession session = request.getSession(false); // No crear una nueva sesión si no existe
+        // 1. Obtener la sesión actual sin crear una nueva
+        HttpSession session = request.getSession(false); 
 
         if (session != null) {
-            // 2. Invalidar la sesión (eliminar todos los atributos y terminar la sesión)
+            // 2. Destruir la sesión en el servidor (Esto borra usuarioLogeado, rol, etc.)
             session.invalidate();
         }
         
-        // 3. Redirigir al usuario a la página principal o al login
-        // Esto refrescará el index.jsp, que volverá a mostrar "Invitado"
-        response.sendRedirect(request.getContextPath() + "/index.jsp");
+        // ========================================================================
+        // 3. ELIMINAR CACHÉ DEL NAVEGADOR (EL CANDADO FINAL)
+        // Estas líneas son CRUCIALES. Evitan que al dar "Atrás" se vea la página anterior.
+        // ========================================================================
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
+        response.setHeader("Pragma", "no-cache"); // HTTP 1.0 (compatibilidad)
+        response.setDateHeader("Expires", 0); // Proxies
+        
+        // 4. Redirigir obligatoriamente al Login
+        // Al enviarlo al login en lugar del index, refuerzas que debe ingresar credenciales.
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
     }
 }
