@@ -13,43 +13,40 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import modelo.Usuario;
+import modelo.UsuarioDAO;
 
-import modelo.UsuarioDAO; // Importamos el modelo
-
-/**
- * Servlet que maneja la lógica de inicio de sesión.
- */
-@WebServlet("/LoginServlet") // Anotación para mapear el Servlet (alternativa a web.xml)
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
 
-   @Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-
-    request.setCharacterEncoding("UTF-8");
-
-    String usuario = request.getParameter("usuario");
-    String contrasena = request.getParameter("contrasena");
-
-    Usuario u = UsuarioDAO.login(usuario, contrasena);
-
-    if (u != null) {
-        HttpSession session = request.getSession(true);
-        session.setAttribute("nombreUsuario", u.getNombre()); // "Hugo Huallpa"
-        session.setAttribute("rol", u.getRol());              // "ADMIN" o "CLIENTE"
-        // (opcional) session.setAttribute("idUsuario", u.getId());
-
-        response.sendRedirect(request.getContextPath() + "/index.jsp");
-    } else {
-        request.setAttribute("error", "Credenciales incorrectas. Verifique su usuario y contraseña.");
-        request.getRequestDispatcher("login.jsp").forward(request, response);
-    }
-}
-    
-    // Opcional: Manejar peticiones GET (si alguien intenta acceder al servlet por URL)
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String usuario = request.getParameter("usuario");
+        String contrasena = request.getParameter("contrasena");
+
+        UsuarioDAO dao = new UsuarioDAO();
+        Usuario u = dao.login(usuario, contrasena);
+
+        if (u != null) {
+            // Crear sesión y guardar datos básicos
+            HttpSession session = request.getSession(true);
+            session.setAttribute("usuarioId", u.getId());
+            session.setAttribute("usuarioUser", u.getUsuario());
+            session.setAttribute("usuarioNombre", u.getNombre());
+            session.setAttribute("rol", u.getRol());
+
+            // Redirige a tu home
+            response.sendRedirect(request.getContextPath() + "/index.jsp");
+        } else {
+            request.setAttribute("error", "Credenciales incorrectas. Verifique su usuario y contraseña.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        }
+    }
+
+    // Si alguien entra por GET al /login, lo mandamos al login.jsp
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.sendRedirect("login.jsp");
     }

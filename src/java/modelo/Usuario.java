@@ -2,7 +2,7 @@
 package modelo;
 
 public class Usuario {
-    private int id;
+    private final int id;
     private String usuario;
     private String nombre;
     private String rol;

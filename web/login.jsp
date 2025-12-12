@@ -40,8 +40,23 @@
             <%
         }
     %>
-
-    <form action="LoginServlet" method="POST">
+<%-- 
+<c:if test="${not empty error}">
+    <p style="color:#ff5252">${error}</p>
+  </c:if>
+   <form method="post" action="${pageContext.request.contextPath}/login">
+    
+       <label>Usuario</label>
+       <input type="text" name="usuario" required>
+    
+       <label>Contraseña</label>
+    <input type="password" name="contrasena" required>
+    <button type="submit">Entrar</button>
+  </form>
+    --%>
+    
+    coneccion con el servlet
+    <form method="post" action="${pageContext.request.contextPath}/login">
         
         <label for="usuario">Usuario:</label>
         <input type="text" id="usuario" name="usuario" required>

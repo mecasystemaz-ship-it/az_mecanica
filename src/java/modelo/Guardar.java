@@ -1,77 +1,61 @@
 package modelo;
 
-import java.sql.*;
 
+import conexion.Conexion;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+/**
+ * Métodos de registro/guardado relacionados a usuarios (puedes expandir a clientes, etc.)
+ */
 public class Guardar {
 
     /**
-     * Registra un nuevo usuario en la base de datos 'az_mecanica'.
+     * Registra un nuevo usuario en la BD.
+     * @param usuario
+     * @param contrasena
+     * @param nombre
+     * @param apellido
+     * @param correo
+     * @param rol
+     * @param celular
+     * @param direccion
+     * @return true si se insertó 1 fila; false en caso contrario
      *
-     * @param usuario El nombre de usuario único.
-     * @param contrasena La contraseña del usuario.
-     * @param nombre El nombre del usuario.
-     * @param apellido El apellido del usuario.
-     * @param correo El correo electrónico único.
-     * @param celular El número de celular.
-     * @param direccion La dirección del usuario.
-     * @return true si el registro fue exitoso, false en caso contrario.
+     * Ajusta la tabla/columnas a tu esquema real.
      */
-    public static boolean guardar(String usuario, String contrasena, String nombre, String apellido, 
-                                  String correo, String celular, String direccion) {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
+    public boolean registrarUsuario(
+            String usuario,
+            String contrasena,
+            String nombre,
+            String apellido,
+            String correo,
+            String celular,
+            String direccion,
+            String rol
+    ) {
+        String sql = "INSERT INTO usuarios (usuario, contrasena, nombre, apellido, correo, celular, direccion, rol, estado) "
+                   + "VALUES (?,?,?,?,?,?,?,?,1)";
 
-        try {
-            // 1. Cargar el driver JDBC
-            Class.forName("com.mysql.cj.jdbc.Driver");
+        try (Connection conn = Conexion.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // 2. Establecer conexión (AJUSTADO: base de datos 'az_mecanica')
-            String url = "jdbc:mysql://localhost:3306/az_mecanica"; 
-            String user = "root";
-            String password = "";
-
-            conn = DriverManager.getConnection(url, user, password);
-
-            // 3. Preparar consulta SQL
-            // La BD asignará por defecto 'CLIENTE' al rol y TRUE al estado.
-            String sql = "INSERT INTO usuarios (usuario, contrasena, nombre, apellido, correo, celular, direccion) " +
-                         "VALUES (?, ?, ?, ?, ?, ?, ?)";
-            
-            pstmt = conn.prepareStatement(sql);
-            
-            // Asignación de parámetros (7 campos)
             pstmt.setString(1, usuario);
-            // NOTA IMPORTANTE: En un entorno de producción, la contraseña debe ser HASH-eada aquí o en el controlador.
-            pstmt.setString(2, contrasena); 
+            pstmt.setString(2, contrasena);
             pstmt.setString(3, nombre);
             pstmt.setString(4, apellido);
             pstmt.setString(5, correo);
             pstmt.setString(6, celular);
             pstmt.setString(7, direccion);
+            pstmt.setString(8, rol);
 
-            // 4. Ejecutar
-            int filasAfectadas = pstmt.executeUpdate();
+            int filas = pstmt.executeUpdate();
+            return filas == 1;
 
-            // Retorna true si se insertó al menos una fila
-            return filasAfectadas > 0; 
-
-        } catch (SQLException e) {
-            // Error de conexión o de restricción de la BD (ej. usuario/correo duplicado)
-            System.err.println("Error SQL al registrar usuario: " + e.getMessage());
-            e.printStackTrace();
+        } catch (SQLException e) { // opcional: logger y manejo de mensajes
+            // opcional: logger y manejo de mensajes
             return false;
-        } catch (ClassNotFoundException e) {
-            System.err.println("Error: No se encontró el driver JDBC.");
-            e.printStackTrace();
-            return false;
-        } finally {
-            // Cierre de recursos
-            try {
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 }

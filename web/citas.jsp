@@ -46,15 +46,14 @@
 </head>
 <body>
 
-<header class="topbar">
-  <div class="container topbar__row">
-    <div class="brand">
-      <img src="${pageContext.request.contextPath}/imgs/logo-az.png" alt="AZ" class="logo">
-      <span class="brand__label">Citas</span>
-    </div>
-    <a class="btn btn-outline" href="login.jsp">Cerrar sesión</a>
+<header style="display:flex; justify-content:space-between; align-items:center; padding:10px;">
+  <div>
+    <a href="CitaServlet?anio=${requestScope.anioPrev}&mes=${requestScope.mesPrev}">‹</a>
+    <strong>${requestScope.mesNombre} ${requestScope.anio}</strong>
+    <a href="CitaServlet?anio=${requestScope.anioNext}&mes=${requestScope.mesNext}">›</a>
   </div>
 </header>
+
 
 <nav class="tabs">
   <a href="index.jsp">Inicio</a>
@@ -128,11 +127,11 @@
         <div class="field">
           <label>Cliente</label>
           <select name="idCliente" required>
-            <option value="">Seleccione</option>
-            <c:forEach var="cli" items="${requestScope.clientes}">
-              <option value="${cli.id}">${cli.nombre}</option>
-            </c:forEach>
-          </select>
+  <option value="">Seleccione</option>
+  <c:forEach var="cli" items="${requestScope.clientes}">
+    <option value="${cli.dni}">${cli.nombre} ${cli.apellido}</option>
+  </c:forEach>
+</select>
         </div>
 
         <div class="row">
@@ -190,6 +189,7 @@
         <div class="row" style="justify-content:space-between;">
           <button class="btn btn-danger-outline">Cancelar cita</button>
           <a id="det-editar" class="btn btn-primary" href="#">Editar</a>
+
         </div>
       </form>
     </div>
@@ -219,7 +219,8 @@ document.addEventListener('click', e=>{
   document.getElementById('det-fecha').value=ev.dataset.fecha;
   document.getElementById('det-hora').value=ev.dataset.hora;
   document.getElementById('det-servicio').value=ev.dataset.servicio;
-  document.getElementById('det-editar').href='cita-form.jsp?id='+ev.dataset.id;
+  document.getElementById('det-editar').href = 'CitaForm?id=' + ev.dataset.id;
+
 
   newPanel.classList.add('hidden');
   detPanel.classList.remove('hidden');
