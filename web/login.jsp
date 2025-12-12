@@ -104,7 +104,7 @@
 
             <form action="LoginServlet" method="POST">
 
-                <label for="usuario">Usuario:</label>
+                <label for="usuario">E-mail:</label>
                 <input type="text" id="usuario" name="usuario" required>
 
                 <label for="contrasena">Contraseña:</label>

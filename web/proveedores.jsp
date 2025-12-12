@@ -160,7 +160,7 @@
         <header class="topbar">
             <div class="container topbar__row">
                 <div class="brand">
-                    <img src="${pageContext.request.contextPath}/imgs/logo-az.png" class="logo" alt="AZ">
+                    <img src="${pageContext.request.contextPath}/imgs/logo.png" class="logo" alt="AZ">
                     <span class="brand__label">Proveedores</span>
                 </div>
                 <a class="btn btn-outline" href="${pageContext.request.contextPath}/login.jsp">Cerrar sesión</a>
@@ -171,8 +171,8 @@
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
             <a>Registro de Pagos</a>
             <a class="active" href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
-            <a>Inventario</a>
-            <a href="${pageContext.request.contextPath}/citas.jsp">Citas</a>
+            <a href="${pageContext.request.contextPath}/productos">Inventario</a>
+            <a href="${pageContext.request.contextPath}/CitaServlet">Citas</a>
             <a href="${pageContext.request.contextPath}/servicios">Servicios</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
             <a href="${pageContext.request.contextPath}/vehiculos">Vehículos</a>

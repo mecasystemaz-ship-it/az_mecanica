@@ -62,7 +62,7 @@
 <header class="topbar">
     <div class="container topbar__row">
         <div class="brand">
-            <img src="${pageContext.request.contextPath}/imgs/logo-az.png" class="logo" alt="AZ">
+            <img src="${pageContext.request.contextPath}/imgs/logo.png" class="logo" alt="AZ">
             <span class="brand__label">Inventario</span>
         </div>
         <a class="btn btn-outline" href="${pageContext.request.contextPath}/LogoutServlet">Cerrar sesión</a>
@@ -74,7 +74,7 @@
     <a>Registro de Pagos</a>
     <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
     <a class="active" href="${pageContext.request.contextPath}/productos">Inventario</a>
-    <a href="${pageContext.request.contextPath}/citas.jsp">Citas</a>
+    <a href="${pageContext.request.contextPath}/CitaServlet">Citas</a>
     <a href="${pageContext.request.contextPath}/servicios">Servicios</a>
     <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
     <a href="${pageContext.request.contextPath}/vehiculos">Vehículos</a>
@@ -166,7 +166,7 @@
             <div class="grid2">
                 <div>
                     <label>Cantidad Inicial *</label>
-                    <input type="number" name="cantInicial" id="crud-cant" min="0" required>
+                    <input type="number" name="cant_inicial" id="crud-cant" min="0" required>
                 </div>
                 <div>
                     <label>Costo (S/)*</label>
@@ -176,7 +176,7 @@
 
             <div>
                 <label>Proveedor *</label>
-                <select name="idProveedor" id="crud-proveedor" required>
+                <select name="id_proveedor" id="crud-proveedor" required>
                     <option value="">-- Seleccionar Proveedor --</option>
                     <c:forEach var="prov" items="${listaProveedores}">
                         <option value="${prov.ruc}">${prov.nombre} (${prov.ruc})</option>

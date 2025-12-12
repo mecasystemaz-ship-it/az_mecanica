@@ -5,6 +5,15 @@
     Description: Página principal con navegación dinámica (login) y estilo unificado.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%
+    // Guardián de seguridad: Verifica si el usuario está logueado
+    if (session.getAttribute("usuarioLogeado") == null) {
+        // Redirigir al login si no hay sesión activa
+        response.sendRedirect("login.jsp");
+        return; // Detener el procesamiento de la página
+    }
+%>
 <!DOCTYPE html>
 <html lang="es">
     <head>

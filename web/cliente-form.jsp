@@ -26,7 +26,7 @@
     <body class="bg">
         <header class="topbar">
             <div class="brand">
-                <img src="${pageContext.request.contextPath}/imgs/logo-az.png" alt="AZ" class="logo">
+                <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="AZ" class="logo">
                 <span id="title">${pageTitle}</span> <%-- 2. Título en el topbar --%>
             </div>
             <a class="btn btn-outline" href="clientes">← Volver</a>

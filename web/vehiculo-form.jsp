@@ -27,7 +27,7 @@
         <header class="topbar">
             <div class="container topbar__row">
                 <div class="brand">
-                    <img src="${pageContext.request.contextPath}/imgs/logo-az.png" alt="AZ" class="logo">
+                    <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="AZ" class="logo">
                     <span class="brand__label">${pageTitle}</span>
                 </div>
                 <a class="btn btn-outline" href="${pageContext.request.contextPath}/vehiculos.jsp">← Volver</a>
