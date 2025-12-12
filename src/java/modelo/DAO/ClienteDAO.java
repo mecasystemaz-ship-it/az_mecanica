@@ -35,16 +35,12 @@ public class ClienteDAO {
         cliente.setTelefono(rs.getString("telefono"));
         cliente.setCorreo(rs.getString("correo"));
         cliente.setDireccion(rs.getString("direccion"));
-        cliente.setOrigen(rs.getString("origen"));
-        cliente.setNreferencia(rs.getString("n_referencia")); // Asumido el nombre de columna 'n_referencia'
-        cliente.setPlaca(rs.getString("placa"));
-        cliente.setMetodo(rs.getString("metodo"));
         return cliente;
     }
 
     // C: CREATE (Agregar un nuevo cliente)
     public boolean agregarCliente(Cliente cliente) {
-        String SQL = "INSERT INTO clientes (dni, nombres, apellidos, telefono, correo, direccion, origen, n_referencia, placa, metodo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String SQL = "INSERT INTO clientes (dni, nombres, apellidos, telefono, correo, direccion) VALUES (?, ?, ?, ?, ?, ?)";
 
         // Uso de try-with-resources para asegurar que los recursos se cierren automáticamente
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL)) {
@@ -55,12 +51,6 @@ public class ClienteDAO {
             ps.setString(4, getSafeString(cliente.getTelefono()));
             ps.setString(5, getSafeString(cliente.getCorreo()));
             ps.setString(6, getSafeString(cliente.getDireccion()));
-
-            // CRÍTICO: Usar getSafeString para prevenir errores de NOT NULL
-            ps.setString(7, getSafeString(cliente.getOrigen()));
-            ps.setString(8, getSafeString(cliente.getNreferencia()));
-            ps.setString(9, getSafeString(cliente.getPlaca()));
-            ps.setString(10, getSafeString(cliente.getMetodo()));
 
             return ps.executeUpdate() > 0;
 
@@ -75,7 +65,7 @@ public class ClienteDAO {
     // R: READ (Obtener todos los clientes)
     public List<Cliente> listarClientes() {
         List<Cliente> clientes = new ArrayList<>();
-        String SQL = "SELECT dni, nombres, apellidos, telefono, correo, direccion, origen, n_referencia, placa, metodo FROM clientes ORDER BY nombres, apellidos ASC";
+        String SQL = "SELECT dni, nombres, apellidos, telefono, correo, direccion FROM clientes ORDER BY nombres, apellidos ASC";
 
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL); ResultSet rs = ps.executeQuery()) {
 
@@ -91,7 +81,7 @@ public class ClienteDAO {
 
     // R: READ (Obtener un cliente por DNI)
     public Cliente obtenerClientePorDni(String dni) {
-        String SQL = "SELECT dni, nombres, apellidos, telefono, correo, direccion, origen, n_referencia, placa, metodo FROM clientes WHERE dni = ?";
+        String SQL = "SELECT dni, nombres, apellidos, telefono, correo, direccion FROM clientes WHERE dni = ?";
         Cliente cliente = null;
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL)) {
 
@@ -111,24 +101,20 @@ public class ClienteDAO {
     // U: UPDATE (Actualizar un cliente por DNI)
     public boolean actualizarCliente(Cliente cliente) {
         // Se actualizan 9 campos, y el DNI se usa para la condición WHERE
-        String SQL = "UPDATE clientes SET nombres=?, apellidos=?, telefono=?, correo=?, direccion=?, origen=?, n_referencia=?, placa=?, metodo=? WHERE dni=?";
+        String SQL = "UPDATE clientes SET nombres=?, apellidos=?, telefono=?, correo=?, direccion=? WHERE dni=?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL)) {
 
-            //  CRÍTICO: Usar getSafeString
+            // 💡 CRÍTICO: Usar getSafeString
             ps.setString(1, getSafeString(cliente.getNombres()));
             ps.setString(2, getSafeString(cliente.getApellidos()));
             ps.setString(3, getSafeString(cliente.getTelefono()));
             ps.setString(4, getSafeString(cliente.getCorreo()));
             ps.setString(5, getSafeString(cliente.getDireccion()));
 
-            // Campos de servicio
-            ps.setString(6, getSafeString(cliente.getOrigen()));
-            ps.setString(7, getSafeString(cliente.getNreferencia()));
-            ps.setString(8, getSafeString(cliente.getPlaca()));
-            ps.setString(9, getSafeString(cliente.getMetodo()));
+            
 
             // Condición WHERE (DNI, es el décimo parámetro)
-            ps.setString(10, cliente.getDni());
+            ps.setString(6, cliente.getDni());
 
             return ps.executeUpdate() > 0;
 

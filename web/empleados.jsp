@@ -215,13 +215,14 @@
 
         <nav class="tabs">
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
-            <a>Registro de Pagos</a>
+            <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
+            <a href="${pageContext.request.contextPath}/pagos.jsp">Pagos</a>
             <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
             <a href="${pageContext.request.contextPath}/productos">Inventario</a>
+            <a class="active" href="${pageContext.request.contextPath}/empleados">Empleados</a>
             <a href="${pageContext.request.contextPath}/CitaServlet">Citas</a>
             <a href="${pageContext.request.contextPath}/servicios">Servicios</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
-            <a class="active" href="${pageContext.request.contextPath}/empleados">Empleados</a>
             <a href="${pageContext.request.contextPath}/vehiculos">Vehículos</a>
         </nav>
 

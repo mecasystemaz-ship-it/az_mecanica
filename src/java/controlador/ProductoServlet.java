@@ -2,7 +2,7 @@ package controlador;
 
 import modelo.Producto;
 import modelo.DAO.ProductoDAO;
-import modelo.DAO.ProveedorDAO; // <-- 1. Importar el DAO de Proveedor
+import modelo.DAO.ProveedorDAO; 
 import modelo.Proveedor;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,12 +15,12 @@ import java.util.List;
 public class ProductoServlet extends HttpServlet {
 
     private ProductoDAO productoDAO;
-    private ProveedorDAO proveedorDAO; // <-- 3. Declarar la instancia del DAO
+    private ProveedorDAO proveedorDAO;
 
     @Override
     public void init() {
         productoDAO = new ProductoDAO();
-        proveedorDAO = new ProveedorDAO(); // <-- 4. Inicializar en init()
+        proveedorDAO = new ProveedorDAO(); 
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ProductoServlet extends HttpServlet {
     private void guardarOActualizar(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        String idParam = request.getParameter("cod_producto");
+        String idParam = request.getParameter("codProducto");
         String nombre = request.getParameter("nombre");
         String categoria = request.getParameter("categoria");
         String cantParam = request.getParameter("cant_inicial");
@@ -108,7 +108,7 @@ public class ProductoServlet extends HttpServlet {
     private void eliminar(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        String idParam = request.getParameter("cod_producto");
+        String idParam = request.getParameter("codProducto");
         if (idParam != null && !idParam.isEmpty()) {
             try {
                 int id = Integer.parseInt(idParam);

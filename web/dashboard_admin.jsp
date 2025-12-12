@@ -140,22 +140,17 @@
                 <button class="menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainnav">☰</button>
             </div>
 
-            <nav id="mainnav" class="nav">
-                <div class="container nav__list">
-                    <a href="${pageContext.request.contextPath}/index.jsp" class="nav__link">Principal</a>
-                    <a href="${pageContext.request.contextPath}/reparacion.jsp" class="nav__link">Reparación</a>
-                    <a href="${pageContext.request.contextPath}/mantenimiento.jsp" class="nav__link">Mantenimiento</a>
-                    <a href="${pageContext.request.contextPath}/auxilio.jsp" class="nav__link">Auxilio</a>
-                    <a href="${pageContext.request.contextPath}/localizacion.jsp" class="nav__link">Localización</a>
-
-                    <% if (isAdmin) { %>
-                    <a href="${pageContext.request.contextPath}/dashboard_admin.jsp" 
-                       class="nav__link nav__link--admin is-active" 
-                       style="background-color: #ffcc00; color: #141419; font-weight: bold;">
-                        Dashboard Admin
-                    </a>
-                    <% }%>
-                </div>
+            <nav class="tabs">
+                <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
+                <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
+                <a href="${pageContext.request.contextPath}/pagos.jsp">Pagos</a>
+                <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
+                <a href="${pageContext.request.contextPath}/productos">Inventario</a>
+                <a href="${pageContext.request.contextPath}/empleados">Empleados</a>
+                <a href="${pageContext.request.contextPath}/CitaServlet">Citas</a>
+                <a href="${pageContext.request.contextPath}/servicios">Servicios</a>
+                <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
+                <a href="${pageContext.request.contextPath}/vehiculos">Vehículos</a>
             </nav>
 
 

@@ -12,25 +12,25 @@ public class VehiculoDAO {
     }
 
     // Orden correcto de columnas
-    private static final String COLUMNAS_VEHICULO =
-            "placa, marca, tipo, modelo, anio, color, combustible, transmision, num_motor, vin, kilometraje, soat, tarjeta_propietario, dni_cliente";
+    private static final String COLUMNAS_VEHICULO
+            = "placa, marca, tipo, modelo, anio, color, combustible, transmision, num_motor, vin, kilometraje, soat, tarjeta_propietario, dni_cliente";
 
-    private static final String SQL_LISTAR =
-            "SELECT v.*, CONCAT(c.nombres,' ',c.apellidos) AS nombre_cliente_join " +
-            "FROM vehiculo v LEFT JOIN clientes c ON v.dni_cliente = c.dni ORDER BY v.placa";
+    private static final String SQL_LISTAR
+            = "SELECT v.*, CONCAT(c.nombres,' ',c.apellidos) AS nombre_cliente_join "
+            + "FROM vehiculo v LEFT JOIN clientes c ON v.dni_cliente = c.dni ORDER BY v.placa";
 
-    private static final String SQL_INSERTAR =
-            "INSERT INTO vehiculo (" + COLUMNAS_VEHICULO + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String SQL_INSERTAR
+            = "INSERT INTO vehiculo (" + COLUMNAS_VEHICULO + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-    private static final String SQL_ACTUALIZAR =
-            "UPDATE vehiculo SET placa=?, marca=?, tipo=?, modelo=?, anio=?, color=?, combustible=?, transmision=?, num_motor=?, vin=?, kilometraje=?, soat=?, tarjeta_propietario=?, dni_cliente=? WHERE placa=?";
+    private static final String SQL_ACTUALIZAR
+            = "UPDATE vehiculo SET placa=?, marca=?, tipo=?, modelo=?, anio=?, color=?, combustible=?, transmision=?, num_motor=?, vin=?, kilometraje=?, soat=?, tarjeta_propietario=?, dni_cliente=? WHERE placa=?";
 
-    private static final String SQL_ELIMINAR =
-            "DELETE FROM vehiculo WHERE placa=?";
+    private static final String SQL_ELIMINAR
+            = "DELETE FROM vehiculo WHERE placa=?";
 
-    private static final String SQL_OBTENER_POR_PLACA =
-            "SELECT v.*, CONCAT(c.nombres,' ',c.apellidos) AS nombre_cliente_join " +
-            "FROM vehiculo v LEFT JOIN clientes c ON v.dni_cliente = c.dni WHERE v.placa=?";
+    private static final String SQL_OBTENER_POR_PLACA
+            = "SELECT v.*, CONCAT(c.nombres,' ',c.apellidos) AS nombre_cliente_join "
+            + "FROM vehiculo v LEFT JOIN clientes c ON v.dni_cliente = c.dni WHERE v.placa=?";
 
     private Vehiculo mapearVehiculo(ResultSet rs) throws SQLException {
         Vehiculo v = new Vehiculo();
@@ -41,7 +41,9 @@ public class VehiculoDAO {
         v.setModelo(rs.getString("modelo"));
 
         v.setAnio(rs.getInt("anio"));
-        if (rs.wasNull()) v.setAnio(null);
+        if (rs.wasNull()) {
+            v.setAnio(null);
+        }
 
         v.setColor(rs.getString("color"));
         v.setCombustible(rs.getString("combustible"));
@@ -50,7 +52,9 @@ public class VehiculoDAO {
         v.setVin(rs.getString("vin"));
 
         v.setKilometraje(rs.getInt("kilometraje"));
-        if (rs.wasNull()) v.setKilometraje(null);
+        if (rs.wasNull()) {
+            v.setKilometraje(null);
+        }
 
         v.setSoat(rs.getString("soat"));
         v.setTarjetaPropietario(rs.getString("tarjeta_propietario"));
@@ -63,32 +67,36 @@ public class VehiculoDAO {
 
     public List<Vehiculo> listarVehiculos() {
         List<Vehiculo> lista = new ArrayList<>();
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(SQL_LISTAR);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_LISTAR); ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) lista.add(mapearVehiculo(rs));
+            while (rs.next()) {
+                lista.add(mapearVehiculo(rs));
+            }
 
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return lista;
     }
 
     public Vehiculo obtenerVehiculoPorPlaca(String placa) {
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_POR_PLACA)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_POR_PLACA)) {
 
             ps.setString(1, placa);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) return mapearVehiculo(rs);
+            if (rs.next()) {
+                return mapearVehiculo(rs);
+            }
 
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     public boolean agregarVehiculo(Vehiculo v) {
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(SQL_INSERTAR)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_INSERTAR)) {
 
             ps.setString(1, v.getPlaca());
             ps.setString(2, v.getMarca());
@@ -107,13 +115,14 @@ public class VehiculoDAO {
 
             return ps.executeUpdate() > 0;
 
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     public boolean actualizarVehiculo(Vehiculo v, String placaOriginal) {
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(SQL_ACTUALIZAR)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_ACTUALIZAR)) {
 
             ps.setString(1, v.getPlaca());
             ps.setString(2, v.getMarca());
@@ -133,18 +142,63 @@ public class VehiculoDAO {
 
             return ps.executeUpdate() > 0;
 
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     public boolean eliminarVehiculo(String placa) {
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(SQL_ELIMINAR)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL_ELIMINAR)) {
 
             ps.setString(1, placa);
             return ps.executeUpdate() > 0;
 
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
+    }
+
+    public List<Vehiculo> listarVehiculosPorCliente(String dniCliente) {
+        List<Vehiculo> lista = new ArrayList<>();
+        String sql = "SELECT placa, marca FROM vehiculo WHERE dni_cliente = ? ORDER BY placa";
+
+        try (Connection conn = ConexionDB.getInstancia().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, dniCliente);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Vehiculo v = new Vehiculo();
+
+                // 🚨 LIMPIEZA EXTREMA EN JAVA: Usar RegEx para eliminar caracteres de control
+                String placaDB = rs.getString("placa");
+                String marcaDB = rs.getString("marca");
+
+                // La expresión regular [\\p{C}] busca cualquier carácter de control (invisible)
+                // y lo reemplaza por una cadena vacía, antes de hacer el trim final.
+                String placaLimpia = (placaDB != null)
+                        ? placaDB.replaceAll("[\\p{C}]", "").trim()
+                        : "";
+
+                String marcaLimpia = (marcaDB != null)
+                        ? marcaDB.replaceAll("[\\p{C}]", "").trim()
+                        : "";
+
+                // ⚠️ DIAGNÓSTICO CLAVE EN JAVA SERVER ⚠️
+                System.out.println("DEBUG DAO: Placa RAW='" + placaDB + "', Placa LIMPIA='" + placaLimpia + "'");
+
+                // 1. Asignar el valor limpio al objeto Vehiculo
+                v.setPlaca(placaLimpia);
+                v.setMarca(marcaLimpia);
+
+                lista.add(v);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error en listarVehiculosPorCliente: " + e.getMessage());
+        }
+        return lista;
     }
 }

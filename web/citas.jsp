@@ -171,9 +171,25 @@
             .btn-round {
                 border-radius:20px;
             }
+
+            /* FORZAR VISIBILIDAD DE OPCIONES DE SELECT EN TEMA OSCURO */
+            .field select option {
+                background-color: #333 !important;
+                color: #fff !important;
+            }
+            #placaVehiculo option {
+                background-color: #333 !important;
+                color: #fff !important;
+            }
         </style>
     </head>
     <body>
+        
+        <%
+            String nombreUsuario = (String) session.getAttribute("nombreUsuario");
+            String rol = (String) session.getAttribute("rol");
+            boolean isAdmin = (rol != null) && "ADMIN".equalsIgnoreCase(rol.trim());
+        %>
 
         <div id="overlay"></div>
 
@@ -183,13 +199,17 @@
                     <img src="${pageContext.request.contextPath}/imgs/logo-az.png" alt="AZ" class="logo">
                     <span class="brand__label">Citas</span>
                 </div>
+                <span style="color:#cfd1d6; font-size:.95rem;">
+                    <%= (nombreUsuario != null) ? ("Hola, " + nombreUsuario + "!") : "Invitado"%>
+                </span>
                 <a class="btn btn-outline" href="logout.jsp">Cerrar sesión</a>
             </div>
         </header>
 
         <nav class="tabs">
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
-            <a>Registro de Pagos</a>
+            <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
+            <a href="${pageContext.request.contextPath}/pagos.jsp">Pagos</a>
             <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
             <a href="${pageContext.request.contextPath}/productos">Inventario</a>
             <a href="${pageContext.request.contextPath}/empleados">Empleados</a>
@@ -269,10 +289,7 @@
                         <div class="field">
                             <label for="placaVehiculo">Vehiculo</label>
                             <select id="placaVehiculo" name="placaVehiculo" required>
-                                <option value="">Seleccione</option>
-                                <c:forEach var="vehi" items="${requestScope.vehiculos}">
-                                    <option value="${vehi.placa}">${vehi.marca} (${vehi.placa})</option>
-                                </c:forEach>
+                                <option value="">Seleccione un cliente</option>
                             </select>
                         </div>
 
@@ -342,66 +359,57 @@
         </main>
 
         <script>
-            const panel = document.getElementById('sidepanel');
-            const overlay = document.getElementById('overlay'); // Obtener el overlay
-            const newPanel = document.getElementById('panel-new');
-            const detPanel = document.getElementById('panel-detail');
-            const btnCancelar = document.getElementById('btn-cancelar');
+            // =================================================================
+            // CONFIGURACIÓN GLOBAL
+            // =================================================================
+            // Asegúrate de que CONTEXT_PATH sea accesible (viene de JSP)
+            const CONTEXT_PATH = '${pageContext.request.contextPath}';
+            const VEHICULO_AJAX_URL = CONTEXT_PATH + '/VehiculoAjax';
+            const CITA_SERVLET_URL = CONTEXT_PATH + '/CitaServlet';
 
-            const btnConfirmar = document.getElementById('btn-confirmar');
-            const formDetalle = document.getElementById('form-detalle');
-            const detAction = document.getElementById('det-action');
+            // =================================================================
+            // 1. FUNCIONES Y MANIPULACIÓN DE PANELES (SIDE PANEL & DETALLE)
+            // =================================================================
 
-            btnConfirmar.onclick = () => {
-                if (confirm('¿Estás seguro de que quieres CONFIRMAR esta cita?')) {
-                    detAction.value = 'confirm'; // Establece la acción a 'confirm'
-                    formDetalle.submit();
-                }
-            };
-
-            btnCancelar.onclick = () => {
-                if (confirm('¿Estás seguro de que quieres CANCELAR esta cita?')) {
-                    detAction.value = 'cancel'; // Establece la acción a 'cancel'
-                    formDetalle.submit();
-                }
-            };
-
-            // Función para abrir el panel y el overlay
-            function openPanel() {
-                panel.classList.add('open');
-                overlay.classList.add('visible');
+            // Función para obtener todos los elementos del DOM necesarios
+            function getElements() {
+                // Almacena las referencias a los elementos para usarlas fácilmente
+                return {
+                    panel: document.getElementById('sidepanel'),
+                    overlay: document.getElementById('overlay'),
+                    newPanel: document.getElementById('panel-new'),
+                    detPanel: document.getElementById('panel-detail'),
+                    btnCancelar: document.getElementById('btn-cancelar'),
+                    btnConfirmar: document.getElementById('btn-confirmar'),
+                    formDetalle: document.getElementById('form-detalle'),
+                    detAction: document.getElementById('det-action'),
+                    dniClienteSelect: document.getElementById("dniCliente"),
+                    vehiculoSelect: document.getElementById("placaVehiculo")
+                };
             }
 
-            // Función para cerrar el panel y el overlay
-            function closePanel() {
-                panel.classList.remove('open');
-                overlay.classList.remove('visible');
-                newPanel.classList.add('hidden');
-                detPanel.classList.add('hidden');
+            // Abrir Panel
+            function openPanel(elements) {
+                if (elements.panel && elements.overlay) {
+                    elements.panel.classList.add('open');
+                    elements.overlay.classList.add('visible');
+                }
             }
 
-            // Abrir panel al hacer clic en "Nueva cita"
-            document.getElementById('btn-nueva').onclick = () => {
-                detPanel.classList.add('hidden');
-                newPanel.classList.remove('hidden');
-                openPanel();
-            };
+            // Cerrar Panel
+            function closePanel(elements) {
+                if (elements.panel) {
+                    elements.panel.classList.remove('open');
+                    elements.overlay.classList.remove('visible');
+                    // Aseguramos que ambos sub-paneles se oculten al cerrar
+                    elements.newPanel.classList.add('hidden');
+                    elements.detPanel.classList.add('hidden');
+                }
+            }
 
-            // Cerrar panel al hacer clic en "Cancelar" o "Cerrar" dentro del panel
-            document.querySelectorAll('[data-close]').forEach(b => {
-                b.onclick = closePanel;
-            });
-
-            // Cerrar panel al hacer clic en el overlay (fondo oscuro)
-            overlay.onclick = closePanel;
-
-            // Manejador de eventos al hacer clic en una cita (evento)
-            document.addEventListener('click', e => {
-                const ev = e.target.closest('.event');
-                if (!ev)
-                    return;
-
-                // Rellenar campos del panel de detalle
+            // Lógica para llenar los campos de detalle de la cita
+            function fillDetailPanel(ev, elements) {
+                // 🚨 CRÍTICO: Usamos .value para elementos de formulario (input, select)
                 document.getElementById('det-id').value = ev.dataset.id;
                 document.getElementById('det-cliente').value = ev.dataset.cliente;
                 document.getElementById('det-fecha').value = ev.dataset.fecha;
@@ -410,22 +418,178 @@
                 document.getElementById('det-estado').value = ev.dataset.estado;
                 document.getElementById('det-editar').href = 'cita-form.jsp?id=' + ev.dataset.id;
 
-                // Mostrar/Ocultar el botón de cancelar según el estado
-                if (ev.dataset.estado === 'PENDIENTE') {
-                    btnConfirmar.classList.remove('hidden');
-                    btnCancelar.classList.remove('hidden');
-                } else if (ev.dataset.estado === 'CONFIRMADA') {
-                    btnConfirmar.classList.add('hidden'); // No se puede confirmar si ya está confirmada
-                    btnCancelar.classList.remove('hidden');
-                } else if (ev.dataset.estado === 'CANCELADA') {
-                    btnConfirmar.classList.add('hidden');
-                    btnCancelar.classList.add('hidden'); // No se puede cancelar si ya está cancelada
+                // Control de visibilidad de botones (Confirmar / Cancelar)
+                const estado = ev.dataset.estado;
+                elements.btnConfirmar.classList.add('hidden');
+                elements.btnCancelar.classList.add('hidden');
+
+                if (estado === 'PENDIENTE') {
+                    elements.btnConfirmar.classList.remove('hidden');
+                    elements.btnCancelar.classList.remove('hidden');
+                } else if (estado === 'CONFIRMADA') {
+                    elements.btnCancelar.classList.remove('hidden');
                 }
 
-                newPanel.classList.add('hidden');
-                detPanel.classList.remove('hidden');
-                openPanel();
-            });
+                // Mostrar panel de detalle
+                elements.newPanel.classList.add('hidden');
+                elements.detPanel.classList.remove('hidden');
+                openPanel(elements);
+            }
+
+            // Inicializar eventos principales (clics en botones y calendario)
+            function initPanelEvents(elements) {
+                // Abrir panel Nueva Cita
+                const btnNueva = document.getElementById('btn-nueva');
+                if (btnNueva) {
+                    btnNueva.onclick = () => {
+                        elements.detPanel.classList.add('hidden');
+                        elements.newPanel.classList.remove('hidden');
+                        openPanel(elements);
+                    };
+                }
+
+                // Cerrar panel
+                document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => closePanel(elements));
+                elements.overlay.onclick = () => closePanel(elements);
+
+                // Eventos Confirmar / Cancelar cita
+                if (elements.btnConfirmar && elements.btnCancelar && elements.formDetalle && elements.detAction) {
+                    elements.btnConfirmar.onclick = () => {
+                        if (confirm('¿Seguro de confirmar la cita?')) {
+                            elements.detAction.value = 'confirm';
+                            elements.formDetalle.action = CITA_SERVLET_URL;
+                            elements.formDetalle.submit();
+                        }
+                    };
+                    elements.btnCancelar.onclick = () => {
+                        if (confirm('¿Seguro de cancelar la cita?')) {
+                            elements.detAction.value = 'cancel';
+                            elements.formDetalle.action = CITA_SERVLET_URL;
+                            elements.formDetalle.submit();
+                        }
+                    };
+                }
+
+                // Evento Clic en evento calendario
+                document.addEventListener('click', e => {
+                    const ev = e.target.closest('.event');
+                    if (ev) {
+                        fillDetailPanel(ev, elements);
+                    }
+                });
+            }
+
+            // =================================================================
+            // 2. LÓGICA AJAX: CARGA DINÁMICA DE VEHÍCULOS
+            // (Esta función debe ser accesible globalmente o dentro de DOMContentLoaded)
+            // =================================================================
+
+            function cargarVehiculos(dni, vehiculoSelect) {
+
+                vehiculoSelect.innerHTML = '<option value="" disabled selected>Cargando vehículos...</option>';
+                vehiculoSelect.disabled = true;
+
+                const url = VEHICULO_AJAX_URL + '?dni=' + dni + '&_t=' + new Date().getTime();
+
+                fetch(url)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error(`Error de red o servidor: ${res.status}`);
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            // Limpiar y resetear el select
+                            vehiculoSelect.innerHTML = '';
+                            vehiculoSelect.disabled = false;
+
+                            // Opción por defecto
+                            let defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = 'Seleccione un Vehículo';
+                            defaultOption.disabled = true;
+                            defaultOption.selected = true;
+                            vehiculoSelect.appendChild(defaultOption);
+
+                            if (data && data.length > 0) {
+
+                                console.log("JSON de vehículos recibido (para validación):", data);
+
+                                data.forEach((v, index) => {
+
+                                    // 🚨 DEBUG: Muestra el objeto V tal cual
+                                    console.log("DEBUG AJAX OBJECT:", v);
+
+                                    // 1. Acceso CLAVE: Usamos corchetes para forzar la lectura de la propiedad 'placa'
+                                    const placa_raw = (v['placa'] || '').toString();
+                                    const marca_raw = (v['marca'] || '').toString();
+
+                                    // Aplicación SÓLO de trim()
+                                    const placa_limpia = placa_raw.trim();
+                                    const marca_limpia = marca_raw.trim();
+
+                                    // 2. Inserción en el select
+                                    if (placa_limpia.length > 0) {
+
+                                        let displayText = '';
+
+                                        if (marca_limpia.length > 0) {
+                                            displayText = `${placa_limpia} - ${marca_limpia}`;
+                                                                            } else {
+                                                                                displayText = placa_limpia;
+                                                                            }
+
+                                                                            // 🚀 VERIFICACIÓN FINAL
+                                                                            console.log(`[EXITOSO - FINAL] Texto a insertar: "${displayText}"`);
+
+                                                                            const option = document.createElement('option');
+                                                                            option.value = placa_limpia;
+                                                                            option.innerHTML = displayText;
+
+                                                                            vehiculoSelect.appendChild(option);
+                                                                        } else {
+                                                                            // Si el objeto llega bien (lo dice tu DEBUG) pero aquí es vacío, 
+                                                                            // el problema es la codificación del archivo JS/JSP.
+                                                                            console.warn(`[FALLO FATAL] Placa vacía. Se intentó leer v['placa']`);
+                                                                        }
+                                                                    });
+
+                                                                } else {
+                                                                    // Si no hay vehículos
+                                                                    let noVehiclesOption = document.createElement('option');
+                                                                    noVehiclesOption.value = '';
+                                                                    noVehiclesOption.textContent = 'Sin vehículos disponibles';
+                                                                    vehiculoSelect.appendChild(noVehiclesOption);
+                                                                }
+                                                            })
+                                                            .catch(error => {
+                                                                console.error('Error al procesar vehículos:', error);
+                                                                vehiculoSelect.innerHTML = '<option value="" disabled selected>Error de carga. Verifique la consola.</option>';
+                                                                vehiculoSelect.disabled = true;
+                                                            });
+                                                }
+
+                                                // =================================================================
+                                                // 3. INICIALIZACIÓN PRINCIPAL (DOM Ready)
+                                                // =================================================================
+
+                                                document.addEventListener("DOMContentLoaded", function () {
+                                                    // Obtener todas las referencias una vez que el DOM está cargado
+                                                    const elements = getElements();
+
+                                                    // Inicializar la lógica de apertura/cierre de paneles
+                                                    initPanelEvents(elements);
+
+                                                    // Inicializar evento de cambio para la carga de vehículos (AJAX)
+                                                    if (elements.dniClienteSelect && elements.vehiculoSelect) {
+                                                        elements.dniClienteSelect.addEventListener("change", function () {
+                                                            const dni = this.value;
+                                                            // Llamar a la función de carga de vehículos
+                                                            cargarVehiculos(dni, elements.vehiculoSelect);
+                                                        });
+                                                    }
+                                                });
         </script>
+
     </body>
 </html>

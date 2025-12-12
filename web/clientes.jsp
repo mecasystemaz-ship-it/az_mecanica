@@ -22,6 +22,12 @@
 
     <body class="bg">
 
+        <%
+            String nombreUsuario = (String) session.getAttribute("nombreUsuario");
+            String rol = (String) session.getAttribute("rol");
+            boolean isAdmin = (rol != null) && "ADMIN".equalsIgnoreCase(rol.trim());
+        %>
+
         <!-- TOP -->
         <header class="topbar">
             <div class="container topbar__row">
@@ -29,6 +35,9 @@
                     <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="AZ" class="logo">
                     <span class="brand__label">Clientes</span>
                 </div>
+                <span style="color:#cfd1d6; font-size:.95rem;">
+                    <%= (nombreUsuario != null) ? ("Hola, " + nombreUsuario + "!") : "Invitado"%>
+                </span>
                 <a class="btn btn-outline" href="login.jsp">Cerrar sesión</a>
             </div>
         </header>
@@ -36,7 +45,8 @@
         <!-- NAV -->
         <nav class="tabs">
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
-            <a>Registro de Pagos</a>
+            <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
+            <a href="${pageContext.request.contextPath}/pagos.jsp">Pagos</a>
             <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
             <a href="${pageContext.request.contextPath}/productos">Inventario</a>
             <a href="${pageContext.request.contextPath}/empleados">Empleados</a>
@@ -65,13 +75,13 @@
                         <thead>
                             <tr>
                                 <th>Cliente</th>
-                                <th>Origen</th>
-                                <th>N° Ref.</th> 
+                                <th>Telefono</th>
+                                <th>Correo</th> 
 
-                                <th>Placa</th>
+                                <th>Direccion</th>
                                 <th>Fecha</th>
                                 <th>Monto</th>
-                                <th>Método</th>
+                                <th>dni</th>
                                 <th class="ta-center">Acciones</th>
                             </tr>
                         </thead>
@@ -83,15 +93,15 @@
 
                                     <%-- Campos de Servicio (vienen directamente del DAO) --%>
 
-                                    <td><span class="tag">${cliente.origen}</span></td>
-                                    <td>${cliente.nreferencia}</td> 
-                                    <td>${cliente.placa}</td>
+                                    <td><span class="tag">${cliente.telefono}</span></td>
+                                    <td>${cliente.correo}</td> 
+                                    <td>${cliente.direccion}</td>
 
                                     <%-- NOTA: Debes agregar la Fecha y Monto a tu Modelo/BD para que sean reales --%>
                                     <td>N/A</td> <%-- Fecha (aún no existe en el modelo) --%>
                                     <td><span class="money">S/ N/A</span></td> <%-- Monto (aún no existe en el modelo) --%>
 
-                                    <td>${cliente.metodo}</td>
+                                    <td>${cliente.dni}</td>
 
                                     <td class="ta-center">
                                         <%-- 🛑 CORRECCIÓN: Apuntamos al SERVLET (/clientes) para que cargue los datos --%>

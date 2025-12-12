@@ -24,7 +24,7 @@
       <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="Logo AZ" class="brand__img">
     </a>
 
-    <a href="tel:+51973608798" class="phone-badge">Llámanos: 973 608 798</a>
+    <a href="tel:+51947340388" class="phone-badge">Llámanos: +51 947 340 388</a>
 
     <button class="menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainnav">☰</button>
   </div>
@@ -72,7 +72,7 @@
       </p>
     </article>
     <aside class="content__cta" style="justify-content:flex-end;">
-      <a class="btn btn--accent" href="tel:+51973608798">Llámanos ahora</a>
+      <a class="btn btn--accent" href="tel: +51947340388">Llámanos ahora</a>
     </aside>
   </section>
 
@@ -127,7 +127,7 @@
   <!-- Cinta CTA inferior -->
   <div class="cta-strip">
     <span>¿Listo para agendar tu diagnóstico?</span>
-    <a class="btn btn--dark" href="https://wa.me/51973608798" target="_blank" rel="noopener">Escríbenos</a>
+    <a class="btn btn--dark" href="https://wa.me/51947340388" target="_blank" rel="noopener">Escríbenos</a>
   </div>
 </main>
 
@@ -136,7 +136,7 @@
   <div class="container footer__inner">
     <small>© <%= java.time.Year.now() %> AZ Mecánica — Reparación</small>
   </div>
-  <a class="wa-fab" href="https://wa.me/51973608798" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+  <a class="wa-fab" href="https://wa.me/51947340388" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
 </footer>
 
 <!-- JS menú móvil -->

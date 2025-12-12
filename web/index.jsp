@@ -5,15 +5,6 @@
     Description: Página principal con navegación dinámica (login) y estilo unificado.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<%
-    // Guardián de seguridad: Verifica si el usuario está logueado
-    if (session.getAttribute("usuarioLogeado") == null) {
-        // Redirigir al login si no hay sesión activa
-        response.sendRedirect("login.jsp");
-        return; // Detener el procesamiento de la página
-    }
-%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -40,7 +31,7 @@
                     <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="Logo AZ" class="brand__img">
                 </a>
 
-                <a href="tel:+51973608798" class="phone-badge">Llámanos: 973 608 798</a>
+                <a href="tel:+51947340388" class="phone-badge">Llámanos: +51 947 340 388</a>
 
                 <div class="user-info" style="display:flex; align-items:center; gap:.5rem; margin-left:.5rem;">
                     <span style="color:#cfd1d6; font-size:.95rem;">
@@ -80,6 +71,7 @@
                     <a href="${pageContext.request.contextPath}/vehiculos.jsp" class="nav__link">Vehículos</a>
                     <a href="${pageContext.request.contextPath}/servicios.jsp" class="nav__link">Servicios</a>
                     <a href="${pageContext.request.contextPath}/citas.jsp" class="nav__link">Citas</a>
+                    <a href="${pageContext.request.contextPath}/proformas.jsp" class="nav__link" >Proformas</a>
 
                 </div>
             </nav>
@@ -170,7 +162,7 @@
                             asesoramiento para compra de vehículos con inspección técnica previa.
                         </p>
 
-                        <img src="${pageContext.request.contextPath}/public_html/imagenes/logo-az-mini.png" alt="AZ" style="height:56px; margin-top:.6rem;">
+                        <img src="${pageContext.request.contextPath}imgs/logo.png" alt="AZ" style="height:56px; margin-top:.6rem;">
                     </article>
                 </section>
 
@@ -197,7 +189,10 @@
             <!-- Cinta CTA inferior -->
             <div class="cta-strip">
                 <span>¿Necesitas una evaluación hoy?</span>
-                <a class="btn btn--dark" href="https://wa.me/51973698798" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+                <a class="btn btn--dark" href="https://wa.me/51947340388" target="_blank" rel="noopener">
+                    Escríbenos por WhatsApp
+                </a>
+
             </div>
         </main>
 
@@ -206,7 +201,8 @@
             <div class="container footer__inner">
                 <small>© <%= java.time.Year.now()%> AZ Mecánica — Todos los derechos reservados</small>
             </div>
-            <a class="wa-fab" href="https://wa.me/51973698798" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+             <a class="wa-fab" href="https://wa.me/51947340388" target="_blank" rel="noopener">💬</a>
+        </footer>
         </footer>
 
         <!-- ====== JS menú móvil (mismo patrón) ====== -->

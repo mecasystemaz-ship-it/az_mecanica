@@ -3,14 +3,14 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%
-    // Protección de acceso
+    // Protección de acceso (Se mantiene igual)
     String rolGuard = (String) session.getAttribute("rol");
     if (rolGuard == null || !"ADMIN".equals(rolGuard)) {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
 
-    // Previene volver con botón atrás
+    // Previene volver con botón atrás (Se mantiene igual)
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setHeader("Pragma", "no-cache");
     response.setDateHeader("Expires", 0);
@@ -20,20 +20,17 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>AZ Mecánica | Catálogo de Servicios</title>
+        <title>AZ Mecánica | Gestión de Proformas</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="stylesheet"
               href="${pageContext.request.contextPath}/css/estiloM.css?v=<%=System.currentTimeMillis()%>">
 
         <style>
-
-            /* 🎨✨ --- MODAL MEJORADO --- ✨🎨 */
-
+            /* Estilos se mantienen igual */
             .modal.hidden {
                 display: none;
             }
-
             .modal {
                 position: fixed;
                 inset: 0;
@@ -45,7 +42,6 @@
                 animation: fadeIn .25s ease-out;
                 z-index: 9999;
             }
-
             @keyframes fadeIn {
                 from {
                     opacity: 0;
@@ -54,7 +50,6 @@
                     opacity: 1;
                 }
             }
-
             .modal-card {
                 background: #ffffff;
                 width: 600px;
@@ -64,11 +59,9 @@
                 animation: pop .25s ease-out;
                 transform-origin: center;
             }
-
             .modal-card.small {
                 width: 380px;
             }
-
             @keyframes pop {
                 from {
                     transform: scale(.85);
@@ -79,7 +72,6 @@
                     opacity: 1;
                 }
             }
-
             .modal-card h3 {
                 margin-bottom: 15px;
                 font-size: 20px;
@@ -87,10 +79,7 @@
                 border-bottom: 2px solid #e8e8e8;
                 padding-bottom: 8px;
             }
-
-            .modal-card input,
-            .modal-card select,
-            .modal-card textarea {
+            .modal-card input, .modal-card select, .modal-card textarea {
                 width: 100%;
                 padding: 9px 12px;
                 border: 1px solid #cfcfcf;
@@ -99,25 +88,19 @@
                 outline: none;
                 transition: .2s;
             }
-
-            .modal-card input:focus,
-            .modal-card select:focus,
-            .modal-card textarea:focus {
+            .modal-card input:focus, .modal-card select:focus, .modal-card textarea:focus {
                 border-color: #0066ff;
                 box-shadow: 0 0 0 2px rgba(0,102,255,0.2);
             }
-
             .modal-footer {
                 margin-top: 20px;
                 display: flex;
                 justify-content: flex-end;
                 gap: 12px;
             }
-
             .modal-footer.two {
                 justify-content: space-between;
             }
-
             .btn {
                 padding: 8px 16px;
                 border-radius: 6px;
@@ -126,27 +109,21 @@
                 font-size: 14px;
                 transition: .2s;
             }
-
             .btn:hover {
                 opacity: .85;
             }
-
             .btn-primary {
                 background: #0066ff;
                 color: #fff;
             }
-
             .btn-danger {
                 background: #d93025;
                 color: white;
             }
-
             textarea {
                 resize: vertical;
                 min-height: 70px;
             }
-
-            /* Otros estilos ya existentes (se dejan intactos) */
             .alert {
                 padding: 10px;
                 margin-bottom: 20px;
@@ -160,13 +137,11 @@
                 background: #f8d7da;
                 color: #721c24;
             }
-
             .grid2 {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 15px;
             }
-
         </style>
     </head>
 
@@ -176,7 +151,7 @@
             <div class="container topbar__row">
                 <div class="brand">
                     <img src="${pageContext.request.contextPath}/imgs/logo.png" class="logo" alt="AZ">
-                    <span class="brand__label">Servicios</span>
+                    <span class="brand__label">Proformas</span>
                 </div>
                 <a class="btn btn-outline" href="${pageContext.request.contextPath}/LogoutServlet">Cerrar sesión</a>
             </div>
@@ -184,13 +159,13 @@
 
         <nav class="tabs">
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
-            <a href="${pageContext.request.contextPath}/proformas">Proformas</a>
+            <a class="active" href="${pageContext.request.contextPath}/proformas">Proformas</a>
             <a href="${pageContext.request.contextPath}/pagos.jsp">Pagos</a>
             <a href="${pageContext.request.contextPath}/proveedores">Proveedores</a>
             <a href="${pageContext.request.contextPath}/productos">Inventario</a>
             <a href="${pageContext.request.contextPath}/empleados">Empleados</a>
             <a href="${pageContext.request.contextPath}/CitaServlet">Citas</a>
-            <a class="active" href="${pageContext.request.contextPath}/servicios">Servicios</a>
+            <a href="${pageContext.request.contextPath}/servicios">Servicios</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
             <a href="${pageContext.request.contextPath}/vehiculos">Vehículos</a>
         </nav>
@@ -207,48 +182,47 @@
             </c:if>
 
             <div class="toolbar">
-                <div>Catálogo de Servicios</div>
-                <button class="btn btn-primary btn-round" id="btn-open-create">+ Añadir Servicio</button>
+                <div>Gestión de Proformas</div>
+                <button class="btn btn-primary btn-round" id="btn-open-create">+ Crear Proforma</button>
             </div>
 
             <div class="table-wrapper">
                 <table class="table flat">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Servicio</th>
-                            <th>Categoría</th>
-                            <th>Precio</th>
-                            <th>Tiempo</th>
+                            <th>ID Proforma</th>
+                            <th>Fecha</th>
+                            <th>ID Cliente</th>
+                            <th>Nombre Cliente</th> <%-- Columna del nombre completo --%>
+                            <th>Monto Estimado</th>
+                            <th>Estado</th>
                             <th class="center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <c:forEach var="p" items="${listaProformas}">
+                            <tr id="proforma-${fn:escapeXml(p.idProforma)}"
+                                data-id="${fn:escapeXml(p.idProforma)}"
+                                data-cliente-id="${fn:escapeXml(p.idCliente)}"
+                                data-monto="${p.montoEstimado}"
+                                data-estado="${p.estado}">
 
-                        <c:forEach var="s" items="${listaServicios}">
-                            <tr id="servicio-${s.idServicio}"
-                                data-id="${s.idServicio}"
-                                data-nombre="${fn:escapeXml(s.nombre)}"
-                                data-categoria="${fn:escapeXml(s.categoria)}"
-                                data-precio="${s.precio}"
-                                data-tiempo="${fn:escapeXml(s.tiempoEstimado)}"
-                                data-descripcion="${fn:escapeXml(s.descripcion)}">
-
-                                <td>${s.idServicio}</td>
-                                <td>${s.nombre}</td>
-                                <td>${s.categoria}</td>
-                                <td>S/ ${s.precio}</td>
-                                <td>${s.tiempoEstimado}</td>
+                                <td>${p.idProforma}</td>
+                                <td>${p.fecha}</td>
+                                <td>${p.idCliente}</td>
+                                <td>${p.nombreCliente}</td> <%-- Aquí se usa el campo concatenado --%>
+                                <td>S/ ${p.montoEstimado}</td>
+                                <td>${p.estado}</td>
 
                                 <td class="center">
-                                    <button class="icon-btn" title="Modificar" data-edit="${s.idServicio}">✏️</button>
-                                    <button class="icon-btn danger" title="Eliminar" data-delete="${s.idServicio}">🗑️</button>
+                                    <button class="icon-btn" title="Modificar" data-edit="${fn:escapeXml(p.idProforma)}">✏️</button>
+                                    <button class="icon-btn danger" title="Eliminar" data-delete="${fn:escapeXml(p.idProforma)}">🗑️</button>
                                 </td>
                             </tr>
                         </c:forEach>
 
-                        <c:if test="${empty listaServicios}">
-                            <tr><td colspan="6" class="center">No hay servicios registrados.</td></tr>
+                        <c:if test="${empty listaProformas}">
+                            <tr><td colspan="7" class="center">No hay proformas registradas.</td></tr>
                         </c:if>
 
                     </tbody>
@@ -257,48 +231,43 @@
 
         </main>
 
-        <!-- Modal CRUD -->
-        <div id="modal-crud-service" class="modal hidden">
+        <div id="modal-crud-proforma" class="modal hidden">
             <div class="modal-card">
-                <h3 id="modal-title">Registrar Nuevo Servicio</h3>
+                <h3 id="modal-title">Registrar Nueva Proforma</h3>
 
-                <form method="post" action="${pageContext.request.contextPath}/servicios/guardar" id="form-crud-service">
+                <form method="post" action="${pageContext.request.contextPath}/proformas/guardar" id="form-crud-proforma">
 
-                    <input type="hidden" id="crud-id-servicio" name="id_servicio">
-
-                    <div class="grid2">
-                        <div>
-                            <label>Nombre *</label>
-                            <input type="text" name="nombre" id="crud-nombre" required>
-                        </div>
-
-                        <div>
-                            <label>Categoría</label>
-                            <select name="categoria" id="crud-categoria">
-                                <option value="">Seleccione</option>
-                                <option>Mantenimiento</option>
-                                <option>Diagnóstico</option>
-                                <option>Reparación</option>
-                                <option>Otro</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label>ID Proforma *</label>
+                        <input type="text" name="id_proforma" id="crud-id-proforma" required maxlength="15">
                     </div>
 
                     <div class="grid2">
                         <div>
-                            <label>Precio (S/)</label>
-                            <input type="number" step="0.01" id="crud-precio" name="precio" required>
+                            <label>Cliente * (DNI/RUC)</label>
+                            <select name="id_cliente" id="crud-id-cliente" required>
+                                <option value="">-- Seleccione Cliente --</option>
+                                <c:forEach var="cliente" items="${listaClientes}">
+                                    <option value="${cliente.dni}">
+                                        ${cliente.dni} - ${cliente.nombres} ${cliente.apellidos}
+                                    </option>
+                                </c:forEach>
+                            </select>
                         </div>
 
                         <div>
-                            <label>Tiempo estimado</label>
-                            <input type="text" id="crud-tiempo" name="tiempo_estimado">
+                            <label>Monto Estimado (S/)</label>
+                            <input type="number" step="0.01" id="crud-monto-estimado" name="monto_estimado" required min="0">
                         </div>
                     </div>
 
                     <div>
-                        <label>Descripción</label>
-                        <textarea name="descripcion" id="crud-descripcion"></textarea>
+                        <label>Estado</label>
+                        <select name="estado" id="crud-estado" required>
+                            <option value="PENDIENTE">PENDIENTE</option>
+                            <option value="ACEPTADA">ACEPTADA</option>
+                            <option value="RECHAZADA">RECHAZADA</option>
+                        </select>
                     </div>
 
                     <div class="modal-footer">
@@ -310,12 +279,11 @@
             </div>
         </div>
 
-        <!-- Modal Delete -->
         <div id="modal-delete" class="modal hidden">
             <div class="modal-card small">
-                <h3>¿Eliminar servicio?</h3>
-                <form method="post" action="${pageContext.request.contextPath}/servicios/eliminar">
-                    <input type="hidden" id="delete-id" name="id_servicio">
+                <h3>¿Eliminar Proforma?</h3>
+                <form method="post" action="${pageContext.request.contextPath}/proformas/eliminar">
+                    <input type="hidden" id="delete-id" name="id_proforma">
                     <div class="modal-footer two">
                         <button type="button" class="btn" data-close>Cancelar</button>
                         <button type="submit" class="btn btn-danger">Eliminar</button>
@@ -333,20 +301,24 @@
                 btn.addEventListener("click", e => close(e.target.closest(".modal")))
             );
 
-            const modal = qs("#modal-crud-service");
-            const form = qs("#form-crud-service");
+            const modal = qs("#modal-crud-proforma");
+            const form = qs("#form-crud-proforma");
             const title = qs("#modal-title");
             const submitBtn = qs("#crud-submit-btn");
 
+            const inputIdProforma = qs("#crud-id-proforma");
+
             const resetModal = () => {
                 form.reset();
-                qs("#crud-id-servicio").value = "";
-                title.textContent = "Registrar Nuevo Servicio";
+                inputIdProforma.value = "";
+                inputIdProforma.readOnly = false; // Permitir edición para nuevo registro
+                title.textContent = "Registrar Nueva Proforma";
                 submitBtn.textContent = "Registrar";
             };
 
             qs("#btn-open-create").addEventListener("click", () => {
                 resetModal();
+                qs("#crud-estado").value = "PENDIENTE";
                 open(modal);
             });
 
@@ -357,22 +329,24 @@
                     return;
 
                 const id = btn.dataset.edit;
-                const row = qs("#servicio-" + id);
+                const row = qs("#proforma-" + id);
 
-                qs("#crud-id-servicio").value = row.dataset.id;
-                qs("#crud-nombre").value = row.dataset.nombre;
-                qs("#crud-categoria").value = row.dataset.categoria;
-                qs("#crud-precio").value = row.dataset.precio;
-                qs("#crud-tiempo").value = row.dataset.tiempo;
-                qs("#crud-descripcion").value = row.dataset.descripcion;
+                inputIdProforma.value = row.dataset.id;
+                inputIdProforma.readOnly = true; // No permitir cambiar el ID al editar
 
-                title.textContent = "Modificar Servicio ID: " + id;
+                // CAMBIO: ID Cliente
+                qs("#crud-id-cliente").value = row.dataset.clienteId;
+
+                qs("#crud-monto-estimado").value = row.dataset.monto;
+                qs("#crud-estado").value = row.dataset.estado;
+
+                title.textContent = "Modificar Proforma ID: " + id;
                 submitBtn.textContent = "Guardar Cambios";
 
                 open(modal);
             });
 
-            // ELIMINAR
+            // ELIMINAR (Se mantiene igual, ya que usa el atributo data-delete)
             document.addEventListener("click", e => {
                 const btn = e.target.closest("[data-delete]");
                 if (!btn)

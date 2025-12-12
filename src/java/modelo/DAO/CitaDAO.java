@@ -52,6 +52,8 @@ public class CitaDAO {
         return lista;
     }
 
+    
+
     public List<Servicio> listarServicios() {
         List<Servicio> lista = new ArrayList<>();
         // Asumiendo tabla 'Servicio' y estado 1

@@ -22,11 +22,10 @@
 <header class="topbar">
     <div class="container topbar__inner">
         <a class="brand" href="${pageContext.request.contextPath}/index.jsp" aria-label="Inicio">
-            <!-- Reemplaza por tu logo -->
-            <img src="${pageContext.request.contextPath}/public_html/imagenes/logo-az.png" alt="Logo AZ" class="brand__img">
+            <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="Logo AZ" class="brand__img">
         </a>
 
-        <a href="tel:+51973608798" class="phone-badge">Llámanos: 973 608 798</a>
+        <a href="tel:+51947340388" class="phone-badge">Llámanos: +51 947 340 388</a>
 
         <button class="menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainnav">
             ☰
@@ -47,9 +46,9 @@
 <!-- ====== HERO/GALERÍA ====== -->
 <section class="gallery container">
     <!-- Insertar tus imágenes -->
-    <img src="${pageContext.request.contextPath}/public_html/imagenes/mant-1.jpg" alt="Volante vehículo" class="gallery__img">
-    <img src="${pageContext.request.contextPath}/public_html/imagenes/mant-2.jpg" alt="Panel vehículo" class="gallery__img">
-    <img src="${pageContext.request.contextPath}/public_html/imagenes/mant-3.jpg" alt="Escáner automotriz" class="gallery__img">
+    <img src="${pageContext.request.contextPath}/imgs/imgcar1.jpg" alt="Volante vehículo" class="gallery__img">
+    <img src="${pageContext.request.contextPath}/imgs/imgcar2.jpg" alt="Panel vehículo" class="gallery__img">
+    <img src="${pageContext.request.contextPath}/imgs/imgcar10.jpg" alt="Escáner automotriz" class="gallery__img">
 </section>
 
 <!-- ====== CUERPO PRINCIPAL ====== -->
@@ -74,7 +73,7 @@
         </article>
 
         <aside class="content__cta">
-            <a class="btn btn--accent" href="tel:+51973608798">¡Llámanos hoy!</a>
+            <a class="btn btn--accent" href="tel:+51947340388">¡Llámanos hoy!</a>
         </aside>
     </div>
 
@@ -111,7 +110,7 @@
     <!-- Cinta CTA inferior -->
     <div class="cta-strip">
         <span>¿Listo para tu próximo mantenimiento?</span>
-        <a class="btn btn--dark" href="https://wa.me/51973608798" target="_blank" rel="noopener">Agendar por WhatsApp</a>
+        <a class="btn btn--dark" href="https://wa.me/51947340388"" target="_blank" rel="noopener">Agendar por WhatsApp</a>
     </div>
 </main>
 
@@ -122,7 +121,7 @@
     </div>
 
     <!-- Botón flotante WhatsApp -->
-    <a class="wa-fab" href="https://wa.me/51973608798" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <a class="wa-fab" href="https://wa.me/51947340388" target="_blank" rel="noopener" aria-label="WhatsApp">
         💬
     </a>
 </footer>

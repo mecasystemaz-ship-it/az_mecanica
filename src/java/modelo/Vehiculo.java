@@ -94,7 +94,7 @@ public class Vehiculo {
     }
 
     public void setNummotor(String numMotor) {
-        this.nummotor = nummotor;
+        this.nummotor = numMotor;
     }
 
     public Integer getKilometraje() {

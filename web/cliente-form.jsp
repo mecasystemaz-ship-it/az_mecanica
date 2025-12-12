@@ -83,35 +83,7 @@
                                value="${cliente.direccion}">
                     </div>
 
-                    <div class="row col-3">
-                        <label class="label">Origen</label>
-                        <select class="select" name="origen">
-                            <option value="">—</option>
-                            <option ${cliente.origen == 'Orden' ? 'selected' : ''}>Orden</option>
-                            <option ${cliente.origen == 'Proforma' ? 'selected' : ''}>Proforma</option>
-                            <option ${cliente.origen == 'Web' ? 'selected' : ''}>Web</option>
-                        </select>
-                    </div>
-                    <div class="row col-3">
-                        <label class="label">N° Ref.</label>
-                        <input class="input" name="nreferencia" placeholder="OR-0000 / PF-0000"
-                               value="${cliente.nreferencia}">
-                    </div>
-                    <div class="row col-3">
-                        <label class="label">Placa</label>
-                        <input class="input" name="placa" placeholder="ABC-123"
-                               value="${cliente.placa}">
-                    </div>
-                    <div class="row col-3">
-                        <label class="label">Método</label>
-                        <select class="select" name="metodo">
-                            <option value="">—</option>
-                            <option ${cliente.metodo == 'Efectivo' ? 'selected' : ''}>Efectivo</option>
-                            <option ${cliente.metodo == 'Tarjeta' ? 'selected' : ''}>Tarjeta</option>
-                            <option ${cliente.metodo == 'Yape' ? 'selected' : ''}>Yape</option>
-                            <option ${cliente.metodo == 'Plin' ? 'selected' : ''}>Plin</option>
-                        </select>
-                    </div>
+                    
 
                     <div class="form-actions col-12">
                         <%-- 💡 CAMBIO: Mostrar el botón solo si la acción NO es 'view' --%>

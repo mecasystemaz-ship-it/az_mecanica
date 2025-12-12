@@ -12,7 +12,7 @@
   <title>Localización | AZ Mecánica</title>
 
   <!-- MISMO CSS -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estiloM.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estiloM.css?v=<%=System.currentTimeMillis()%>">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
@@ -21,10 +21,10 @@
 <header class="topbar">
   <div class="container topbar__inner">
     <a class="brand" href="${pageContext.request.contextPath}/index.jsp" aria-label="Inicio">
-      <img src="${pageContext.request.contextPath}/public_html/imagenes/logo-az.png" alt="Logo AZ" class="brand__img">
+      <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="Logo AZ" class="brand__img">
     </a>
 
-    <a href="tel:+51973608798" class="phone-badge">Llámanos: 973 608 798</a>
+    <a href="tel:+51947340388"" class="phone-badge">Llámanos: +51 947 340 388</a>
 
     <button class="menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainnav">☰</button>
   </div>
@@ -90,17 +90,17 @@
   <!-- Cinta CTA inferior -->
   <div class="cta-strip" style="margin-top:1rem;">
     <span>¿Necesitas dirección o envío de ubicación por WhatsApp?</span>
-    <a class="btn btn--dark" href="https://wa.me/51973698798" target="_blank" rel="noopener">Contáctanos</a>
+    <a class="btn btn--dark" href="https://wa.me/51947340388"" target="_blank" rel="noopener">Contáctanos</a>
   </div>
 </main>
 
 <!-- ====== FOOTER ====== -->
 <footer class="footer">
   <div class="container footer__inner">
-    <small>© <%= java.time.Year.now() %> AZ Mecánica — contacto: <span style="color:#ffd76a;">azmecanica@ejemplo.com</span></small>
+    <small>© <%= java.time.Year.now() %> AZ Mecánica — contacto: <span style="color:#ffd76a;">azmecanica@gmail.com</span></small>
   </div>
 
-  <a class="wa-fab" href="https://wa.me/51973698798" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+  <a class="wa-fab" href="https://wa.me/51947340388"" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
 </footer>
 
 <!-- JS menú móvil (mismo de las otras páginas) -->

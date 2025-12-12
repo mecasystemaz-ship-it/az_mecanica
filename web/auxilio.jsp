@@ -12,7 +12,7 @@
   <title>Auxilio Mecánico | AZ Mecánica</title>
 
   <!-- MISMO CSS -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estiloM.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estiloM.css?v=<%=System.currentTimeMillis()%>">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
@@ -21,10 +21,10 @@
 <header class="topbar">
   <div class="container topbar__inner">
     <a class="brand" href="${pageContext.request.contextPath}/index.jsp" aria-label="Inicio">
-      <img src="${pageContext.request.contextPath}/public_html/imagenes/logo-az.png" alt="Logo AZ" class="brand__img">
+      <img src="${pageContext.request.contextPath}/imgs/logo.png" alt="Logo AZ" class="brand__img">
     </a>
 
-    <a href="tel:+51973608798" class="phone-badge">Llámanos: 973 608 798</a>
+    <a href="tel:+51947340388"" class="phone-badge">Llámanos: +51 947 340 388</a>
 
     <button class="menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainnav">☰</button>
   </div>
@@ -40,16 +40,18 @@
   </nav>
 </header>
 
-<!-- ====== HERO / GALERÍA (3 columnas como en mantenimiento) ====== -->
-<section class="gallery container">
-  <!-- Reemplaza rutas por tus imágenes -->
-  <img src="${pageContext.request.contextPath}/public_html/imagenes/aux-1.jpg" alt="Atención carretera" class="gallery__img">
-  <img src="${pageContext.request.contextPath}/public_html/imagenes/aux-2.jpg" alt="Auxilio 24h" class="gallery__img">
-  <img src="${pageContext.request.contextPath}/public_html/imagenes/aux-3.jpg" alt="Asistencia de motor" class="gallery__img">
-</section>
-
+    <!-- Banner centrado y ancho igual a las tarjetas -->
+<div class="banner-wrapper">
+  <div class="container">
+    <img src="${pageContext.request.contextPath}/imgs/imgcar11.jpg"
+         alt="Auxilio 24 horas"
+         class="banner-aux__img">
+  </div>
+</div>
+         
 <!-- ====== TÍTULO ====== -->
 <main class="container content">
+         
   <header class="content__header">
     <h1 class="content__title">Auxilio mecánico y asesoramiento técnico</h1>
   </header>
@@ -94,7 +96,7 @@
   <!-- Cinta CTA inferior -->
   <div class="cta-strip">
     <span>¿Necesitas auxilio ahora mismo?</span>
-    <a class="btn btn--dark" href="https://wa.me/51973608798" target="_blank" rel="noopener">Contactar por WhatsApp</a>
+    <a class="btn btn--dark" href="https://wa.me/51947340388"" target="_blank" rel="noopener">Contactar por WhatsApp</a>
   </div>
 </main>
 
@@ -104,7 +106,7 @@
     <small>© <%= java.time.Year.now() %> AZ Mecánica — Auxilio y asesoramiento</small>
   </div>
 
-  <a class="wa-fab" href="https://wa.me/51973608798" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+  <a class="wa-fab" href="https://wa.me/51947340388"" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
 </footer>
 
 <!-- JS menú móvil (mismo de mantenimiento) -->
