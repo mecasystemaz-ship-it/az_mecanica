@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-@WebServlet(name = "ServicioServlet", urlPatterns = {"/servicios", "/servicios/guardar", "/servicios/eliminar"})
+@WebServlet(name = "ServicioServlet", urlPatterns = {"/servicios.jsp", "/servicios/guardar", "/servicios/eliminar"})
 public class ServicioServlet extends HttpServlet {
 
     private ServicioDAO servicioDAO;

@@ -39,7 +39,7 @@
             <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
             <a>Registro de Pagos</a>
             <a>Productos</a>
-            <a>Inventario</a>
+            <a href="${pageContext.request.contextPath}/inventario.jsp">Inventario</a>
             <a href="${pageContext.request.contextPath}/citas.jsp">Citas</a>
             <a href="${pageContext.request.contextPath}/servicios">Servicios</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
@@ -51,7 +51,7 @@
             <section class="card" id="ultimos">
                 <div class="section-head">
                     <h2>Tabla de vehículos registrados</h2>
-                    <a class="btn btn-primary" href="${pageContext.request.contextPath}/vehiculo-form.jsp?action=create">+ Añadir vehículo</a>
+                    <a class="btn btn-primary" href="${pageContext.request.contextPath}/vehiculos/form?action=create">+ Añadir vehículo</a>
                 </div>
 
                 <div class="datatable-wrapper">
@@ -93,8 +93,9 @@
                                     <td>${v.color}</td>
                                     <td><strong class="money">${v.placa}</strong></td>
                                     <td class="ta-center">
-                                        <a class="chip" href="vehiculo-form.jsp?action=view&placa=${v.placa}">👁</a>
-                                        <a class="chip" href="vehiculo-form.jsp?action=edit&placa=${v.placa}">✏</a>
+                                        <a class="chip" href="${pageContext.request.contextPath}/vehiculos/form?action=view&placa=${v.placa}">👁</a>
+                                        <a class="chip" href="${pageContext.request.contextPath}/vehiculos/form?action=edit&placa=${v.placa}">✏</a>
+
                                         <form method="POST" action="${pageContext.request.contextPath}/vehiculos/eliminar" style="display:inline-block;">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="placa" value="${v.placa}">

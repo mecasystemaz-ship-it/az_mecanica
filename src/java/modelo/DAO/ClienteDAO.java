@@ -56,7 +56,7 @@ public class ClienteDAO {
             ps.setString(5, getSafeString(cliente.getCorreo()));
             ps.setString(6, getSafeString(cliente.getDireccion()));
 
-            //  CRÍTICO: Usar getSafeString para prevenir errores de NOT NULL
+            // 💡 CRÍTICO: Usar getSafeString para prevenir errores de NOT NULL
             ps.setString(7, getSafeString(cliente.getOrigen()));
             ps.setString(8, getSafeString(cliente.getNreferencia()));
             ps.setString(9, getSafeString(cliente.getPlaca()));
@@ -114,7 +114,7 @@ public class ClienteDAO {
         String SQL = "UPDATE clientes SET nombres=?, apellidos=?, telefono=?, correo=?, direccion=?, origen=?, n_referencia=?, placa=?, metodo=? WHERE dni=?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(SQL)) {
 
-            //  CRÍTICO: Usar getSafeString
+            // 💡 CRÍTICO: Usar getSafeString
             ps.setString(1, getSafeString(cliente.getNombres()));
             ps.setString(2, getSafeString(cliente.getApellidos()));
             ps.setString(3, getSafeString(cliente.getTelefono()));

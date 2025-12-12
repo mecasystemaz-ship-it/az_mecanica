@@ -9,11 +9,13 @@ public class Vehiculo {
     private Integer anio;
     private String color;
     private String combustible;
-    private String numMotor;
+    private String nummotor;
     private Integer kilometraje;
     private String soat;
     private String tarjetaPropietario;
     private String dniCliente;
+    private String vin;
+    private String transmision;   
 
     // Campo extra para mostrar el nombre del cliente en el JSP (obtenido con JOIN)
     private String nombreCliente;
@@ -23,7 +25,7 @@ public class Vehiculo {
     }
 
     // Constructor con campos principales
-    public Vehiculo(String placa, String marca, String modelo, String dniCliente) {
+    public Vehiculo(String placa, String marca, String modelo, String dniCliente, String vin, String transmision) {
         this.placa = placa;
         this.marca = marca;
         this.modelo = modelo;
@@ -87,12 +89,12 @@ public class Vehiculo {
         this.combustible = combustible;
     }
 
-    public String getNumMotor() {
-        return numMotor;
+    public String getNummotor() {
+        return nummotor;
     }
 
-    public void setNumMotor(String numMotor) {
-        this.numMotor = numMotor;
+    public void setNummotor(String numMotor) {
+        this.nummotor = nummotor;
     }
 
     public Integer getKilometraje() {
@@ -133,5 +135,21 @@ public class Vehiculo {
 
     public void setNombreCliente(String nombreCliente) {
         this.nombreCliente = nombreCliente;
+    }
+    
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+    
+    public String getTransmision() {
+        return transmision;
+    }
+
+    public void setTransmision(String transmision) {
+        this.transmision = transmision;
     }
 }

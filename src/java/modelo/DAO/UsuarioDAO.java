@@ -64,7 +64,5 @@ public class UsuarioDAO {
             e.printStackTrace(); 
         }
         return null; // Credenciales inválidas o error de DB
-
-
     }
 }

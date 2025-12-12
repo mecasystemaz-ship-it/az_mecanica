@@ -118,7 +118,7 @@ public class VehiculoServlet extends HttpServlet {
         String color = request.getParameter("color");
         String combustible = request.getParameter("combustible");
         String transmision = request.getParameter("transmision");
-        String nMotor = request.getParameter("nMotor");
+        String nMotor = request.getParameter("nummotor");
         String vin = request.getParameter("vin");
         String placaOriginal = request.getParameter("placaOriginal"); // Solo existe en EDIT
 
@@ -135,6 +135,9 @@ public class VehiculoServlet extends HttpServlet {
         vehiculo.setAnio(anio);
         vehiculo.setColor(color);
         vehiculo.setCombustible(combustible);
+        vehiculo.setVin(vin);
+        vehiculo.setTransmision(transmision);
+        vehiculo.setNummotor(nMotor);
 
         boolean exito;
 
