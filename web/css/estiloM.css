@@ -1,0 +1,641 @@
+:root{
+  --bg: #0b0b0d;
+  --panel: #17171b;
+  --ink: #f5f5f5;
+  --muted: #b7b7c2;
+  --accent: #ffcc00;  /* amarillo */
+  --accent-ink: #000;
+  --card: #1f1f24;
+  --border: #2a2a30;
+  --shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--ink);
+  background:var(--bg);
+  font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.container{
+  width:min(1200px, 92%);
+  margin-inline:auto;
+}
+
+/* ===== Header / Nav ===== */
+.topbar{
+  background:#0f0f12;
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:50;
+}
+.topbar__inner{
+  display:flex; align-items:center; gap:1rem;
+  padding: .75rem 0;
+}
+.brand__img{height:56px; width:auto; display:block}
+
+.phone-badge{
+  margin-left:auto;
+  background:var(--accent);
+  color:var(--accent-ink);
+  text-decoration:none;
+  font-weight:700;
+  padding:.5rem .8rem;
+  border-radius:.35rem;
+  box-shadow:var(--shadow);
+  white-space:nowrap;
+}
+
+.menu-btn{
+  display:none;
+  margin-left:.25rem;
+  background:transparent;
+  color:var(--ink);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  padding:.35rem .6rem;
+  cursor:pointer;
+}
+
+.nav{
+  background:#121216;
+  border-top:1px solid var(--border);
+}
+.nav__list{
+  display:flex; gap:.75rem; padding:.5rem 0;
+  flex-wrap:wrap;
+}
+.nav__link{
+  color:var(--ink);
+  text-decoration:none;
+  padding:.45rem .75rem;
+  border-radius:.35rem;
+}
+.nav__link:hover{background:#1a1a1f}
+.nav__link.is-active{
+  background:var(--accent);
+  color:var(--accent-ink);
+  font-weight:700;
+}
+
+/* ===== Galería ===== */
+.gallery{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:.8rem;
+  padding:1rem 0 1.25rem;
+}
+.gallery__img{
+  width:100%; height:220px; object-fit:cover; display:block;
+  border-radius:.35rem;
+  box-shadow:var(--shadow);
+}
+
+/* ===== Contenido ===== */
+.content__header{background:#101014; border-left:6px solid var(--accent)}
+.content__title{
+  margin:0; padding:.8rem 1rem; text-transform:uppercase; letter-spacing:.5px;
+}
+.content{padding-bottom:1rem}
+.content__grid{
+  display:grid; grid-template-columns: 1fr 280px; gap:1rem;
+  background:#141419; border:1px solid var(--border); border-radius:.4rem;
+  padding:1rem; box-shadow:var(--shadow);
+}
+.content__text{color:var(--muted)}
+.content__text p{margin:.6rem 0}
+
+.content__cta{
+  display:flex; align-items:flex-start; justify-content:flex-end;
+}
+.btn{
+  display:inline-block; text-decoration:none; cursor:pointer;
+  padding:.75rem 1rem; border-radius:.4rem; font-weight:700;
+}
+.btn--accent{background:var(--accent); color:var(--accent-ink)}
+.btn--accent:hover{filter:brightness(.95)}
+.btn--dark{background:#000; color:#fff}
+.btn--dark:hover{filter:brightness(1.15)}
+
+/* ===== Cards ===== */
+.cards{
+  display:grid; gap:1rem;
+  grid-template-columns: repeat(3, 1fr);
+  margin:1.25rem 0;
+}
+.card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:.5rem; padding:1rem;
+  box-shadow:var(--shadow);
+}
+.card__icon{font-size:1.3rem; margin-bottom:.3rem}
+.card__title{
+  margin:.2rem 0 .5rem; font-size:1rem; text-transform:uppercase;
+  color:#ffe073;
+}
+.card__text{color:var(--muted); font-size:.98rem}
+
+/* Cinta CTA inferior */
+.cta-strip{
+  margin:1.5rem 0 0;
+  display:flex; gap:1rem; align-items:center; justify-content:space-between;
+  background:var(--accent); color:var(--accent-ink);
+  padding:.9rem 1rem; border-radius:.35rem; font-weight:700;
+}
+
+/* ===== Footer ===== */
+.footer{
+  border-top:1px solid var(--border);
+  margin-top:1.25rem;
+  background:#0f0f12;
+}
+.footer__inner{padding:1rem 0; color:var(--muted); font-size:.9rem}
+
+/* WhatsApp FAB */
+.wa-fab{
+  position:fixed; right:18px; bottom:18px;
+  width:48px; height:48px; display:grid; place-items:center;
+  border-radius:50%; background:#25d366; color:#000; text-decoration:none;
+  box-shadow:var(--shadow); font-size:1.25rem;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 900px){
+  .gallery__img{height:180px}
+  .content__grid{grid-template-columns:1fr}
+  .content__cta{justify-content:flex-start}
+  .cards{grid-template-columns: repeat(2, 1fr)}
+  .menu-btn{display:inline-block}
+  .nav{display:none}
+  .nav.is-open{display:block}
+}
+
+@media (max-width: 640px){
+  .gallery{grid-template-columns:1fr}
+  .gallery__img{height:200px}
+  .cards{grid-template-columns:1fr}
+  .phone-badge{margin-left:auto; font-size:.95rem}
+}
+
+
+/* ====== CLIENTES (tabla, filtros y formulario) ====== */
+
+/* Header simple usado en clientes.jsp / cliente-form.jsp */
+.topbar{
+  background:#0f0f12; border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:20;
+}
+.topbar .brand{display:flex; align-items:center; gap:.6rem; padding:.75rem 0}
+.logo{height:46px; width:auto; display:block; background:#fff; border-radius:.35rem; padding:4px}
+.bg{background:var(--bg); color:var(--ink)}
+
+.tabs{
+  display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center;
+  background:#121216; border-top:1px solid var(--border); padding:.5rem 0;
+}
+.tabs a{
+  color:var(--ink); text-decoration:none; padding:.45rem .75rem; border-radius:.35rem;
+}
+.tabs a.active{background:var(--accent); color:var(--accent-ink); font-weight:700}
+.tabs a:hover{background:#1b1b21}
+
+/* Botones base */
+.btn{display:inline-flex; align-items:center; gap:.45rem; cursor:pointer;
+  padding:.55rem .9rem; border-radius:.4rem; text-decoration:none; font-weight:700; border:0}
+.btn-primary{background:var(--accent); color:var(--accent-ink)}
+.btn-secondary{background:#2b2b31; color:#fff}
+.btn-outline{background:transparent; color:var(--ink); border:1px solid var(--border)}
+.btn:hover{filter:brightness(1.02)}
+
+/* Tarjetas / paneles */
+.card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:.5rem; padding:1rem; margin:1rem 0; box-shadow:var(--shadow);
+}
+.card.narrow{max-width:820px; margin-inline:auto}
+.card-head{display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap}
+.actions{display:flex; gap:.5rem}
+
+/* Filtros (R6) */
+.filters{display:flex; gap:.75rem; flex-wrap:wrap; align-items:flex-end}
+.field{display:flex; flex-direction:column; gap:.35rem; min-width:180px}
+.field label{font-size:.85rem; color:var(--muted)}
+.field input, .field select{
+  width:100%; padding:.55rem .65rem; border-radius:.35rem;
+  border:1px solid var(--border); background:#131318; color:var(--ink);
+}
+
+/* Tabla (R6/R7) */
+.table-wrapper{overflow:auto; border:1px solid var(--border); border-radius:.5rem}
+.table{width:100%; border-collapse:collapse; background:#141419}
+.table th, .table td{padding:.7rem .65rem; border-bottom:1px solid var(--border)}
+.table th{position:sticky; top:0; background:#101014; color:#e9e9ef; text-align:left}
+.table tr:hover{background:#19191f}
+.ta-center{text-align:center}
+.empty{color:var(--muted); text-align:center; padding:1rem}
+.icon{padding:.25rem .45rem; border-radius:.35rem; background:#1a1a20; display:inline-block}
+.icon.danger{background:#2a1518}
+.fade{opacity:.35; transition:opacity .2s}
+
+/* Utilidades */
+.center{text-align:center}
+.mt-16{margin-top:1rem}
+
+/* Formulario (R4/R5) */
+.grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:.75rem}
+.col-span-2{grid-column:1 / -1}
+.grid label{font-size:.85rem; color:var(--muted)}
+.grid input, .grid select{
+  padding:.6rem .7rem; border-radius:.35rem; border:1px solid var(--border);
+  background:#131318; color:var(--ink);
+}
+.form-actions{display:flex; gap:.5rem; justify-content:flex-end}
+.hint{color:var(--muted); font-size:.85rem; margin-top:.5rem}
+
+/* Footer */
+.footer{border-top:1px solid var(--border); background:#0f0f12; color:var(--muted); padding:1rem 0; text-align:center}
+
+/* Responsive */
+@media (max-width: 900px){
+  .grid{grid-template-columns:1fr}
+  .field{min-width:unset}
+  .card-head{flex-direction:column; align-items:flex-start}
+}
+
+
+/* Nav de administración */
+.nav--admin{
+  background:#15151a;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.nav__label{
+  opacity:.8; cursor:default; font-weight:700;
+  background:#0f0f12; border:1px solid var(--border);
+}
+
+
+/* ===== Clientes (tabla amarrilla) ===== */
+.topbar__row{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+.brand__label{font-size:1.1rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.5rem}
+.datatable-wrapper{overflow:auto;border:1px solid var(--border);border-radius:.5rem;background:#131318}
+
+.datatable{width:100%;border-collapse:separate;border-spacing:0}
+.datatable thead th{
+  background:#0f0f12; color:#e9e9ef; text-align:left; font-weight:800;
+  padding:.8rem .75rem; position:sticky; top:0; z-index:1;
+  border-bottom:2px solid var(--accent);
+}
+.datatable tbody td{padding:.75rem .75rem;border-bottom:1px solid #222329}
+.datatable tbody tr:hover{background:#18181f}
+.datatable tbody tr td+td{border-left:1px dashed #2a2a30}
+
+/* “Separadores” amarillos arriba y abajo (como card con reglas) */
+#ultimos .datatable-wrapper{box-shadow:inset 0 3px 0 var(--accent), inset 0 -3px 0 var(--accent)}
+
+.tag{
+  display:inline-block; padding:.2rem .45rem; border-radius:999px;
+  background:#23232a; border:1px solid #30303a; font-size:.85rem
+}
+.money{font-weight:800;color:#ffe073}
+
+.chip{
+  inline-size:28px; block-size:28px; display:inline-grid; place-items:center;
+  border-radius:999px; background:#1b1b21; border:1px solid #2c2c33;
+  text-decoration:none; font-size:.9rem; margin-inline:2px; transition:.15s;
+}
+.chip:hover{transform:translateY(-1px); filter:brightness(1.1)}
+.chip.danger{background:#2a1518; border-color:#3b1a1e}
+
+.btn-primary{background:var(--accent);color:#000}
+.btn-secondary{background:#2b2b31;color:#fff}
+
+
+/* ========= FORMULARIO MODERNO (Cliente) ========= */
+.card.narrow{max-width:880px;margin-inline:auto}
+
+.form{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem}
+.form .col-12{grid-column:1/-1}
+.form .col-6{grid-column:span 6}
+@media (max-width:900px){ .form .col-6{grid-column:1/-1} }
+
+.label{
+  display:block;margin-bottom:.35rem;font-size:.9rem;color:var(--muted);
+}
+.input,.select{
+  width:100%;display:block;
+  padding:.7rem .9rem;border-radius:.5rem;
+  border:1px solid var(--border);background:#121218;color:var(--ink);
+}
+.input::placeholder{color:#8f8f99}
+.input:focus,.select:focus{
+  outline:0;border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(255,204,0,.15);
+}
+
+.form .row{display:flex;flex-direction:column}
+.form .subtle{color:var(--muted);font-size:.85rem}
+
+.form-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.25rem}
+.form-actions .btn{min-width:120px}
+
+/* mini chips de ayuda bajo el título */
+.form-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem}
+.form-title h2{margin:0;font-size:1.15rem}
+.form-badge{font-weight:800;background:#23232a;border:1px solid #30303a;border-radius:999px;padding:.25rem .6rem}
+
+
+input:disabled, select:disabled{
+  opacity:.7; filter:saturate(.9);
+  background:#15151c; color:#cfcfde; border-color:#2a2a30;
+}
+
+/* agregado con vehiculos */
+.money { letter-spacing:.5px }
+
+
+/*CITAS Y SERVICIOS*/
+
+/* =======================
+   AZ MECÁNICA 
+   Páginas: Servicios / Citas
+   ======================= */
+
+/* UTILIDADES */
+.hidden { display: none !important; }
+.center { text-align: center; }
+.muted { opacity: .75; }
+.row { display: flex; gap: .75rem; }
+.between { justify-content: space-between; }
+.end { justify-content: flex-end; }
+.align-end { align-items: end; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+.gap { gap: 1rem; }
+.narrow { max-width: 900px; margin-inline: auto; }
+
+/* TOP NAV (si ya lo tienes, esto solo suaviza) */
+.topbar .tabs { display:flex; gap:1rem; align-items:center; }
+.topbar .tabs a.active { background: #f6c200; color:#111; border-radius: 6px; padding: .35rem .7rem; }
+
+/* BOTONES */
+.btn { padding: .55rem .9rem; border-radius: 10px; border: 1px solid #d9d9d9; background:#fff; cursor:pointer; }
+.btn:hover { filter: brightness(0.97); }
+.btn-primary { background:#f6c200; border-color:#f6c200; color:#111; font-weight:600; }
+.btn-danger { background:#e53935; border-color:#e53935; color:#fff; }
+.btn-danger-outline { background:#fff; color:#e53935; border-color:#e53935; }
+.btn-round { border-radius: 999px; }
+.link { color:#111; text-decoration:none; }
+.link:hover { text-decoration:underline; }
+
+/* CHIPS / FILTROS CABECERA */
+.toolbar { display:flex; justify-content:space-between; align-items:center; margin: 1rem 0; }
+.chip { background:#222; color:#eee; border:0; border-radius:999px; padding:.45rem .8rem; cursor:pointer; }
+.chip span { opacity:.75; margin-left:.25rem; }
+.chip.muted { background:transparent; color:#999; border:1px dashed #999; }
+
+/* TABLAS PLANAS */
+.table-wrapper { background:#2a2a2a; padding: .5rem; border-radius: 10px; }
+.table.flat { width:100%; border-collapse: collapse; }
+.table.flat thead th {
+  font-weight:600; text-align:left; padding:.75rem .8rem; background:#1f1f1f; color:#f5f5f5;
+  border-bottom: 3px solid #f6c200;
+}
+.table.flat tbody td { padding:.65rem .8rem; border-bottom:1px solid rgba(255,255,255,.08); color:#eaeaea; }
+.table.flat tbody tr:hover { background: rgba(255,255,255,.03); }
+
+/* ICON BUTTONS (acciones) */
+.icon-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:32px; height:32px; border-radius:50%;
+  background:#333; color:#f5f5f5; border:1px solid #3f3f3f; cursor:pointer;
+}
+.icon-btn:hover { background:#3a3a3a; }
+.icon-btn.danger { background:#3b1b1b; border-color:#6b1b1b; }
+.icon-btn.danger:hover { background:#5a2323; }
+
+/* MODALES (Servicios) */
+.modal {
+  position: fixed; inset: 0; display:flex; align-items:center; justify-content:center;
+  background: rgba(0,0,0,.55); z-index: 50; padding: 1rem;
+}
+.modal-card {
+  width: min(900px, 96vw); background:#f5f5f5; color:#111;
+  border-radius: 12px; overflow:hidden; box-shadow: 0 20px 60px rgba(0,0,0,.4);
+}
+.modal-card.small { width: min(520px, 96vw); }
+.modal-header { background:#ededed; padding: .9rem 1rem; border-bottom:1px solid #ddd; }
+.modal-header h3 { margin:0; font-weight:700; }
+.modal-footer { display:flex; justify-content:flex-end; gap:.6rem; padding: .9rem 1rem; border-top:1px solid #ddd; }
+.modal-footer.two { justify-content:space-between; }
+.field { display:flex; flex-direction:column; gap:.35rem; margin: .65rem 1rem; }
+.field > label { font-size:.9rem; color:#333; }
+.field > input, .field > select, .field > textarea {
+  padding:.55rem .6rem; border-radius:8px; border:1px solid #d7d7d7; background:#fff;
+}
+.field.search input { width:100%; border-radius: 12px; }
+
+/* Panel “Servicio Ofrecido” + filas */
+.panel { margin: .5rem 1rem 1rem; border:1px solid #ddd; border-radius:10px; background:#fff; }
+.panel-title { padding:.7rem 1rem; font-weight:600; background:#f2f2f2; border-bottom:1px solid #e6e6e6; }
+.list-selectable { padding:.5rem 1rem 1rem; display:flex; flex-direction:column; gap:.5rem; }
+.row-offer {
+  display:grid; grid-template-columns: 1fr 120px; gap:.7rem; align-items:center;
+  padding:.45rem .6rem; border:1px solid #e7e7e7; border-radius:8px; background:#fafafa;
+}
+.row-offer .offer-name { margin-left:.35rem; }
+.row-offer .inline { width: 100%; padding:.45rem .5rem; border:1px solid #d7d7d7; border-radius:8px; }
+.price-input, .row-offer input[type="number"] { text-align:right; }
+
+/* =========================
+   CALENDARIO (Citas)
+   ========================= */
+.grid-calendar { display:grid; grid-template-columns: 1.2fr .8fr; gap: 1.25rem; align-items:start; }
+.calendar-box { background:#fff; border-radius: 12px; padding: .8rem; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+.calendar-head .legend { margin-left:.8rem; color:#eaeaea; font-size:.95rem; }
+.dot { width:.6rem; height:.6rem; border-radius:50%; display:inline-block; margin-right:.35rem; vertical-align:middle; }
+.dot-green { background:#1bb55c; }
+.dot-yellow { background:#f6c200; }
+.dot-gray { background:#9aa1a7; }
+
+.table.calendar thead th { background:#fafafa; color:#333; border-bottom:1px solid #eee; }
+.table.calendar tbody td {
+  vertical-align: top; background:#fff; color:#333; height:115px; width:14.28%;
+  border:1px solid #eee; position:relative; padding:.35rem;
+}
+.table.calendar tbody td.is-other { background:#fafafa; color:#9aa1a7; }
+.day-num { font-weight:600; color:#555; }
+.cell-body { margin-top:.35rem; display:flex; flex-direction:column; gap:.35rem; }
+
+.event { cursor:pointer; }
+.event-badge {
+  display:inline-block; font-size:.85rem; line-height:1; padding:.35rem .5rem;
+  border-radius:6px; font-weight:700; color:#111;
+}
+.event-text { display:block; color:#333; margin-top:.15rem; }
+
+/* Estados (usa valores exactos del backend: PENDIENTE | CONFIRMADA | CANCELADA) */
+.badge, .event-badge { border:1px solid transparent; }
+.PENDIENTE { background:#f6c200; border-color:#e6b400; }
+.CONFIRMADA { background:#1bb55c; color:#fff; border-color:#159a4d; }
+.CANCELADA { background:#9aa1a7; color:#fff; border-color:#87909a; }
+
+/* PANEL LATERAL (Citas) */
+.sidepanel {
+  background:#fff; border-radius: 12px; min-height: 520px; box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  transform: translateX(8px); opacity: 0; transition: all .25s ease; pointer-events:none; padding: .5rem;
+}
+.sidepanel.open { transform: translateX(0); opacity:1; pointer-events:auto; }
+.panel-card { padding: .7rem; }
+.panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; }
+.panel-header h3 { margin:0; font-weight:700; }
+.panel-card .btn { min-width: 120px; }
+
+/* ETIQUETAS DE CAMPO LECTURA (Detalle de cita) */
+.field.readonly input { background:#f3f3f3; color:#444; }
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .grid-calendar { grid-template-columns: 1fr; }
+  .sidepanel { order: -1; }
+}
+@media (max-width: 640px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .grid3 { grid-template-columns: 1fr; }
+  .table.calendar tbody td { height: 95px; }
+}
+
+
+/* =========================
+   MEJORA DE CONTRASTE - PANEL LATERAL CITAS
+   ========================= */
+.sidepanel,
+.sidepanel .panel-card {
+  color: #fff;
+  background: #222; /* Fondo oscuro del panel */
+}
+
+/* Etiquetas */
+.sidepanel .field label {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Campos de texto, select y textarea */
+.sidepanel input,
+.sidepanel select,
+.sidepanel textarea {
+  color: #fff;
+  background: #141414;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+}
+
+/* Placeholders visibles */
+.sidepanel input::placeholder,
+.sidepanel textarea::placeholder {
+  color: #bdbdbd;
+  opacity: 1;
+}
+
+/* Campos deshabilitados */
+.sidepanel input:disabled,
+.sidepanel select:disabled,
+.sidepanel textarea:disabled {
+  color: #d8d8d8;
+  background: #1b1b1b;
+  opacity: 1;
+}
+
+/* Icono del date/time visible en fondo oscuro */
+.sidepanel input[type="date"]::-webkit-calendar-picker-indicator,
+.sidepanel input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.8);
+}
+
+/* Opciones de los select (texto negro sobre fondo claro) */
+.sidepanel select option {
+  color: #000;
+  background: #fff;
+}
+
+/* Efecto al enfocar campos */
+.sidepanel input:focus,
+.sidepanel select:focus,
+.sidepanel textarea:focus {
+  outline: 2px solid #ffb800;
+  border-color: #ffb800;
+}
+
+/* Mejora general de contraste */
+.sidepanel { color-scheme: dark; }
+
+
+
+/* === Botón base amarillo para Cancelar/Volver en toda la app === */
+.btn:not(.btn-primary):not(.btn-secondary):not(.btn-danger):not(.btn-danger-outline) {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.btn:not(.btn-primary):not(.btn-secondary):not(.btn-danger):not(.btn-danger-outline):hover {
+  filter: brightness(.95);
+}
+
+/* === Cerrar sesión en el topbar: forzar amarillo aunque use .btn-outline === */
+.topbar .btn-outline {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+/* === En el panel lateral de Citas, el botón Cancelar también amarillo === */
+.sidepanel .btn:not(.btn-primary) {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+/* ====== VER MÁS (amarillo) ====== */
+#ultimos .btn.btn-secondary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+#ultimos .btn.btn-secondary:hover { filter: brightness(.95); }
+
+/* ====== FILTROS: etiquetas amarillas y campos con texto negro ====== */
+#historial .filters .field > label {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Texto negro dentro de inputs/selects de filtros */
+#historial .filters .field > input,
+#historial .filters .field > select {
+  background: #ffffff;
+  color: #111;                /* texto negro */
+  border: 1px solid #444;     /* borde más visible */
+}
+
+/* Placeholders visibles (gris oscuro) */
+#historial .filters .field > input::placeholder {
+  color: #666;
+  opacity: 1;
+}
+
+/* Opciones del select con texto negro */
+#historial .filters .field > select option {
+  color: #111;
+  background: #fff;
+}
+
+/* Ícono del date en fondo claro (sin invertir) */
+#historial .filters input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: .85;
+}
