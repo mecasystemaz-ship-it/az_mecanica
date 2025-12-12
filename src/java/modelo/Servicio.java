@@ -1,70 +1,77 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-// src/java/modelo/Servicio.java
+// Archivo: src/main/java/modelo/Servicio.java
 package modelo;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal; // Importamos para manejar el precio con precisión
 
 public class Servicio {
-    private Integer id;
-    private String titulo;
-    private String tipo; // 'Mantenimiento','Diagnóstico','Correctivo','Preventivo'
-    private String dniCliente;
-    private String placaVehiculo;
-    private String origen;      // Orden / Proforma / Web / etc.
-    private String numeroRef;   // único opcional
-    private Date fecha;         // yyyy-MM-dd
-    private BigDecimal montoTotal;
-    private String metodoPago;  // Efectivo / Yape / Plin / Tarjeta...
-    private String estado;      // 'Pendiente','En Proceso','Completado','Cancelado'
-    private String observaciones;
 
-    private List<ServicioItem> items = new ArrayList<>();
+    private int idServicio;
+    private String nombre;
+    private String categoria;
+    private String descripcion;
+    private BigDecimal precio; // Usamos BigDecimal para DECIMAL(10,2)
+    private String tiempoEstimado;
 
-    public Servicio() {}
+    // Constructor vacío (necesario para Java Beans/Frameworks)
+    public Servicio() {
+    }
 
-    // Getters/Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    // --- Getters y Setters ---
+    public int getIdServicio() {
+        return idServicio;
+    }
 
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public void setIdServicio(int idServicio) {
+        this.idServicio = idServicio;
+    }
 
-    public String getTipo() { return tipo; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getDniCliente() { return dniCliente; }
-    public void setDniCliente(String dniCliente) { this.dniCliente = dniCliente; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public String getPlacaVehiculo() { return placaVehiculo; }
-    public void setPlacaVehiculo(String placaVehiculo) { this.placaVehiculo = placaVehiculo; }
+    public String getCategoria() {
+        return categoria;
+    }
 
-    public String getOrigen() { return origen; }
-    public void setOrigen(String origen) { this.origen = origen; }
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
 
-    public String getNumeroRef() { return numeroRef; }
-    public void setNumeroRef(String numeroRef) { this.numeroRef = numeroRef; }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-    public Date getFecha() { return fecha; }
-    public void setFecha(Date fecha) { this.fecha = fecha; }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-    public BigDecimal getMontoTotal() { return montoTotal; }
-    public void setMontoTotal(BigDecimal montoTotal) { this.montoTotal = montoTotal; }
+    public BigDecimal getPrecio() {
+        return precio;
+    }
 
-    public String getMetodoPago() { return metodoPago; }
-    public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public String getTiempoEstimado() {
+        return tiempoEstimado;
+    }
 
-    public String getObservaciones() { return observaciones; }
-    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
+    public void setTiempoEstimado(String tiempoEstimado) {
+        this.tiempoEstimado = tiempoEstimado;
+    }
 
-    public List<ServicioItem> getItems() { return items; }
-    public void setItems(List<ServicioItem> items) { this.items = items; }
+    // Opcional: toString para debugging
+    @Override
+    public String toString() {
+        return "Servicio{"
+                + "idServicio=" + idServicio
+                + ", nombre='" + nombre + '\''
+                + ", precio=" + precio
+                + '}';
+    }
 }

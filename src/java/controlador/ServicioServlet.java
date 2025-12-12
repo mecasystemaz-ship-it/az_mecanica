@@ -1,100 +1,152 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+// Archivo: src/main/java/controlador/ServicioServlet.java
 package controlador;
 
+import modelo.DAO.ServicioDAO;
 import modelo.Servicio;
-import modelo.ServicioDAO;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.util.List;
 
-@WebServlet(name="ServicioServlet", urlPatterns={"/servicios"})
+@WebServlet(name = "ServicioServlet", urlPatterns = {"/servicios", "/servicios/guardar", "/servicios/eliminar"})
 public class ServicioServlet extends HttpServlet {
 
-    private final ServicioDAO dao = new ServicioDAO();
+    private ServicioDAO servicioDAO;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String accion = val(req.getParameter("accion"), "listar");
-        try {
-            switch (accion) {
-                case "nuevo":
-                    req.setAttribute("servicio", new Servicio());
-                    req.getRequestDispatcher("/servicios.jsp").forward(req, resp);
-                    break;
-                case "editar": {
-                    int id = Integer.parseInt(req.getParameter("id"));
-                    req.setAttribute("servicio", dao.buscarPorId(id));
-                    req.getRequestDispatcher("/servicios.jsp").forward(req, resp);
-                    break;
-                }
-                case "eliminar": {
-                    int id = Integer.parseInt(req.getParameter("id"));
-                    dao.eliminar(id);
-                    resp.sendRedirect(req.getContextPath()+"/servicios?accion=listar&msg=Eliminado");
-                    break;
-                }
-                case "listar":
-                default: {
-                    String q = req.getParameter("q");
-                    List<Servicio> lista = dao.listar(q);
-                    req.setAttribute("lista", lista);
-                    req.getRequestDispatcher("/servicios.jsp").forward(req, resp);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            req.setAttribute("error", e.getMessage());
-            req.getRequestDispatcher("/servicios.jsp").forward(req, resp);
+    public void init() throws ServletException {
+        super.init();
+        servicioDAO = new ServicioDAO();
+    }
+
+    // Maneja listado y edición (carga)
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String action = request.getParameter("action");
+
+        if (action == null || action.equals("list")) {
+            listarServicios(request, response);
+        } else {
+            // CRÍTICO: Eliminar la lógica obsoleta de 'edit' y 'view'
+            // Ya no necesitas cargar un servicio en el request y redirigir a otro JSP.
+            // La edición se maneja completamente con JavaScript en servicios.jsp.
+            listarServicios(request, response);
         }
     }
 
+    // Maneja la creación, actualización y eliminación
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        req.setCharacterEncoding("UTF-8");
-        String idStr = req.getParameter("id");
-        Servicio s = new Servicio();
-        try {
-            if (idStr != null && !idStr.isBlank()) s.setId(Integer.parseInt(idStr));
-            s.setTitulo(val(req.getParameter("titulo"), ""));
-            s.setTipo(val(req.getParameter("tipo"), "Mantenimiento"));
-            s.setDniCliente(val(req.getParameter("dni_cliente"), ""));
-            s.setPlacaVehiculo(val(req.getParameter("placa_vehiculo"), ""));
-            s.setOrigen(val(req.getParameter("origen"), ""));
-            s.setNumeroRef(emptyToNull(req.getParameter("numero_ref")));
-            String fechaStr = val(req.getParameter("fecha"), "");
-            s.setFecha(fechaStr.isBlank() ? null : Date.valueOf(fechaStr));
-            String totalStr = val(req.getParameter("monto_total"), "0");
-            try { s.setMontoTotal(new BigDecimal(totalStr)); } catch (Exception ex) { s.setMontoTotal(new BigDecimal("0.00")); }
-            s.setMetodoPago(val(req.getParameter("metodo_pago"), ""));
-            s.setEstado(val(req.getParameter("estado"), "Pendiente"));
-            s.setObservaciones(val(req.getParameter("observaciones"), ""));
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-            boolean ok;
-            if (s.getId() == null) {
-                ok = dao.insertar(s);
-                if (ok) resp.sendRedirect(req.getContextPath()+"/servicios?accion=editar&id="+s.getId()+"&msg=Creado");
-                else   resp.sendRedirect(req.getContextPath()+"/servicios?accion=listar&msg=No+se+pudo+crear");
+        String path = request.getServletPath();
+
+        if (path.equals("/servicios/guardar")) {
+            guardarOActualizarServicio(request, response);
+        } else if (path.equals("/servicios/eliminar")) {
+            eliminarServicio(request, response);
+        } else {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Acción no válida.");
+        }
+    }
+
+    private void listarServicios(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // 1. Obtener la lista de la base de datos
+        List<Servicio> listaServicios = servicioDAO.listarServicios();
+
+        // 2. Establecer el atributo en el request
+        request.setAttribute("listaServicios", listaServicios);
+
+        // 3. Redirigir la ejecución al JSP
+        request.getRequestDispatcher("/servicios.jsp").forward(request, response);
+    }
+
+    // *** ELIMINADA: La función mostrarFormularioServicio ya no es necesaria ***
+
+    private void guardarOActualizarServicio(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Lógica de obtención de parámetros...
+        String idParam = request.getParameter("id_servicio");
+        String nombre = request.getParameter("nombre");
+        String categoria = request.getParameter("categoria");
+        String descripcion = request.getParameter("descripcion");
+        String precioParam = request.getParameter("precio");
+        String tiempoEstimado = request.getParameter("tiempo_estimado");
+
+        Servicio servicio = new Servicio();
+
+        // Si hay ID, estamos en modo Actualizar
+        if (idParam != null && !idParam.isEmpty()) {
+            servicio.setIdServicio(Integer.parseInt(idParam));
+        }
+
+        // Validación y parseo de campos
+        if (nombre == null || nombre.isEmpty() || precioParam == null || precioParam.isEmpty()) {
+            request.getSession().setAttribute("mensajeError", "Nombre y Precio son obligatorios.");
+            response.sendRedirect(request.getContextPath() + "/servicios");
+            return;
+        }
+
+        try {
+            servicio.setNombre(nombre);
+            servicio.setCategoria(categoria);
+            servicio.setDescripcion(descripcion);
+            servicio.setPrecio(new BigDecimal(precioParam)); // Convertir String a BigDecimal
+            servicio.setTiempoEstimado(tiempoEstimado);
+
+            boolean exito;
+            String mensaje;
+
+            if (servicio.getIdServicio() > 0) {
+                exito = servicioDAO.actualizarServicio(servicio);
+                mensaje = "actualizado";
             } else {
-                ok = dao.actualizar(s);
-                if (ok) resp.sendRedirect(req.getContextPath()+"/servicios?accion=editar&id="+s.getId()+"&msg=Actualizado");
-                else   resp.sendRedirect(req.getContextPath()+"/servicios?accion=editar&id="+s.getId()+"&msg=No+se+pudo+actualizar");
+                exito = servicioDAO.agregarServicio(servicio);
+                mensaje = "registrado";
             }
+
+            if (exito) {
+                request.getSession().setAttribute("mensajeExito", "Servicio " + mensaje + " correctamente.");
+            } else {
+                request.getSession().setAttribute("mensajeError", "Error al guardar el servicio.");
+            }
+
+        } catch (NumberFormatException e) {
+            request.getSession().setAttribute("mensajeError", "Error en el formato de Precio.");
         } catch (Exception e) {
-            e.printStackTrace();
-            req.setAttribute("error", e.getMessage());
-            req.setAttribute("servicio", s);
-            req.getRequestDispatcher("/servicios.jsp").forward(req, resp);
+            request.getSession().setAttribute("mensajeError", "Error inesperado: " + e.getMessage());
         }
+
+        response.sendRedirect(request.getContextPath() + "/servicios");
     }
 
-    private String val(String v, String def){ return (v==null)?def:v; }
-    private String emptyToNull(String v){ return (v==null || v.isBlank())? null : v.trim(); }
+    private void eliminarServicio(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String idParam = request.getParameter("id_servicio");
+
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idParam);
+                if (servicioDAO.eliminarServicio(id)) {
+                    request.getSession().setAttribute("mensajeExito", "Servicio eliminado correctamente.");
+                } else {
+                    request.getSession().setAttribute("mensajeError", "Error al eliminar el servicio. Puede estar en uso.");
+                }
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("mensajeError", "ID de servicio no válido.");
+            }
+        }
+
+        response.sendRedirect(request.getContextPath() + "/servicios");
+    }
 }

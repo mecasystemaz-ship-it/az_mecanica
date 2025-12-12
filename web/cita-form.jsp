@@ -22,24 +22,20 @@
     <input type="hidden" name="id" value="${cita.id}">
 
     <label>Cliente</label>
-    <select name="idCliente" required>
+    <select name="idCliente">
       <c:forEach var="cli" items="${clientes}">
-        <option value="${cli.dni}" ${cli.dni==cita.idCliente?'selected':''}>
-          ${cli.nombre} ${cli.apellido}
-        </option>
+        <option value="${cli.id}" ${cli.id==cita.idCliente?'selected':''}>${cli.nombre}</option>
       </c:forEach>
     </select>
 
     <label>Fecha</label>
-    <!-- LocalDate.toString() = yyyy-MM-dd (válido para <input type="date">) -->
-    <input type="date" name="fecha" value="${cita.fecha}" required>
+    <input type="date" name="fecha" value="${cita.fecha}">
 
     <label>Hora</label>
-    <!-- LocalTime.toString() = HH:mm:ss; si prefieres HH:mm puedes formatearlo en el servlet -->
-    <input type="time" name="hora" value="${cita.hora}" required>
+    <input type="time" name="hora" value="${cita.hora}">
 
     <label>Tipo</label>
-    <select name="tipo" required>
+    <select name="tipo">
       <option ${cita.tipo=='Mantenimiento'?'selected':''}>Mantenimiento</option>
       <option ${cita.tipo=='Diagnóstico'?'selected':''}>Diagnóstico</option>
       <option ${cita.tipo=='Correctivo'?'selected':''}>Correctivo</option>
@@ -58,7 +54,7 @@
     <textarea name="notas" rows="3">${cita.notas}</textarea>
 
     <div style="display:flex; justify-content:space-between;">
-      <a href="CitaServlet?anio=${cita.fecha.year}&mes=${cita.fecha.monthValue}" class="btn">Cancelar</a>
+      <a href="citas.jsp" class="btn">Cancelar</a>
       <button class="btn btn-primary">Guardar cambios</button>
     </div>
   </form>

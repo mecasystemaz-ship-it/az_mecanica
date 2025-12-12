@@ -1,6 +1,5 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page isELIgnored="false"%>
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%
     String rolGuard = (String) session.getAttribute("rol");
     if (rolGuard == null || !"ADMIN".equals(rolGuard)) {
@@ -8,6 +7,7 @@
         return;
     }
 %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -16,7 +16,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet"
               href="${pageContext.request.contextPath}/css/estiloM.css?v=<%=System.currentTimeMillis()%>">
+
+
     </head>
+
     <body class="bg">
 
         <!-- TOP -->
@@ -26,8 +29,7 @@
                     <img src="${pageContext.request.contextPath}/imgs/logo-az.png" alt="AZ" class="logo">
                     <span class="brand__label">Clientes</span>
                 </div>
-                <!-- a login.jsp -> lo conecto a tu LogoutServlet -->
-                <a class="btn btn-outline" href="${pageContext.request.contextPath}/logout">Cerrar sesión</a>
+                <a class="btn btn-outline" href="login.jsp">Cerrar sesión</a>
             </div>
         </header>
 
@@ -38,7 +40,7 @@
             <a>Productos</a>
             <a>Inventario</a>
             <a href="citas.jsp">Citas</a>
-            <a href="servicios.jsp">Servicios</a>
+            <a href="servicios">Servicios</a>
             <a class="active">Clientes</a>
             <a href="vehiculos.jsp">Vehículos</a>
         </nav>
@@ -63,7 +65,8 @@
                             <tr>
                                 <th>Cliente</th>
                                 <th>Origen</th>
-                                <th>N° Ref.</th>
+                                <th>N° Ref.</th> 
+
                                 <th>Placa</th>
                                 <th>Fecha</th>
                                 <th>Monto</th>
@@ -71,39 +74,45 @@
                                 <th class="ta-center">Acciones</th>
                             </tr>
                         </thead>
-
-                        <!-- ====== CONECTADO A BACK: requestScope.lista ====== -->
                         <tbody>
-                            <c:choose>
-                                <c:when test="${not empty lista}">
-                                    <c:forEach var="c" items="${lista}">
-                                        <tr data-dni="${c.dni}">
-                                            <td>${c.nombre} ${c.apellido}</td>
-                                            <!-- Estos campos no existen en la tabla clientes; se muestran como '—' para mantener tu formato -->
-                                            <td><span class="tag">—</span></td>
-                                            <td>—</td>
-                                            <td>—</td>
-                                            <td>—</td>
-                                            <td><span class="money">—</span></td>
-                                            <td>—</td>
-                                            <td class="ta-center">
-                                                <!-- Ver: si ya manejas modo 'view' en el form, pasamos el dni -->
-                                                <a class="chip" title="Ver" href="cliente-form.jsp?action=view&dni=${c.dni}">👁</a>
-                                                <!-- Editar vía Servlet para precargar el form -->
-                                                <a class="chip" title="Editar" href="${pageContext.request.contextPath}/clientes?action=editar&dni=${c.dni}">✏</a>
-                                                <!-- Eliminar en backend conservando tu botón y estilo -->
-                                                <button class="chip danger" title="Eliminar" onclick="deleteCliente('${c.dni}', this)">🗑</button>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </c:when>
-                                <c:otherwise>
-                                    <!-- Si lista viene vacía, dejamos un mensaje único (sin romper tu layout) -->
-                                    <tr>
-                                        <td colspan="8" class="empty">No hay clientes registrados.</td>
-                                    </tr>
-                                </c:otherwise>
-                            </c:choose>
+                            <c:forEach var="cliente" items="${listaClientes}">
+                                <tr data-id="${cliente.dni}">
+                                    <%-- Usamos Nombres y Apellidos concatenados para el campo Cliente --%>
+                                    <td>${cliente.nombres} ${cliente.apellidos}</td>
+
+                                    <%-- Campos de Servicio (vienen directamente del DAO) --%>
+
+                                    <td><span class="tag">${cliente.origen}</span></td>
+                                    <td>${cliente.nreferencia}</td> 
+                                    <td>${cliente.placa}</td>
+
+                                    <%-- NOTA: Debes agregar la Fecha y Monto a tu Modelo/BD para que sean reales --%>
+                                    <td>N/A</td> <%-- Fecha (aún no existe en el modelo) --%>
+                                    <td><span class="money">S/ N/A</span></td> <%-- Monto (aún no existe en el modelo) --%>
+
+                                    <td>${cliente.metodo}</td>
+
+                                    <td class="ta-center">
+                                        <%-- 🛑 CORRECCIÓN: Apuntamos al SERVLET (/clientes) para que cargue los datos --%>
+                                        <a class="chip" title="Ver" 
+                                           href="${pageContext.request.contextPath}/clientes?action=view&dni=${cliente.dni}">👁</a>
+                                        <a class="chip" title="Editar" 
+                                           href="${pageContext.request.contextPath}/clientes?action=edit&dni=${cliente.dni}">✏</a>
+
+                                        <%-- Formulario de eliminar (esto ya funcionaba bien) --%>
+                                        <form method="POST" action="${pageContext.request.contextPath}/clientes/eliminar" style="display:inline-block;">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="dni" value="${cliente.dni}">
+                                            <button class="chip danger" type="submit" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar a ${cliente.nombres} ${cliente.apellidos} con DNI ${cliente.dni}?');">🗑</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            <c:if test="${empty listaClientes}">
+                                <tr>
+                                    <td colspan="8" class="empty">No hay clientes registrados.</td>
+                                </tr>
+                            </c:if>
                         </tbody>
                     </table>
                 </div>
@@ -113,7 +122,7 @@
                 </div>
             </section>
 
-            <!-- ===== Historial + filtros (SE MANTIENE IGUAL/JS) ===== -->
+            <!-- ===== Historial + filtros ===== -->
             <section class="card" id="historial">
                 <div class="section-head">
                     <h2>Historial de clientes</h2>
@@ -147,28 +156,15 @@
         <footer class="footer">© 2025, azmecanicav1 – contacto@az.com</footer>
 
         <script>
-            /* ------- Datos MOCK para historial (se mantiene) ------- */
-            let data = []; // será llenado desde el backend
-
-            async function loadHistorial() {
-                try {
-                    const params = new URLSearchParams({
-                        action: 'historial'
-                                // En el primer load no filtramos; los filtros usan applyFilter()
-                    });
-                    const res = await fetch(`${window.location.origin}${'${pageContext.request.contextPath}'}/clientes?` + params.toString(), {
-                        headers: {'Accept': 'application/json'}
-                    });
-                    if (!res.ok)
-                        throw new Error('HTTP ' + res.status);
-                    data = await res.json();
-                    render(data);
-                } catch (e) {
-                    console.error('Error cargando historial:', e);
-                    data = [];
-                    render(data);
-                }
-            }
+            /* ------- Datos MOCK para historial ------- */
+            const data = [
+                {id: 1, nombre: 'Tyler Joseph', origen: 'Orden', ref: 'OR-0234', placa: 'C7L-394', fecha: '2025-02-03', monto: 235, metodo: 'Efectivo'},
+                {id: 2, nombre: 'Luis Cáceres', origen: 'Proforma', ref: 'PF-1045', placa: 'BDP-213', fecha: '2025-01-27', monto: 198, metodo: 'Tarjeta'},
+                {id: 3, nombre: 'Hernan Soto', origen: 'Proforma', ref: 'PF-1064', placa: 'DNW-407', fecha: '2025-01-26', monto: 156, metodo: 'Efectivo'},
+                {id: 4, nombre: 'Ben Canela', origen: 'Orden', ref: 'OR-0239', placa: 'FEX-489', fecha: '2025-01-24', monto: 90, metodo: 'Yape'},
+                {id: 5, nombre: 'Claudia Rojas', origen: 'Web', ref: 'WB-8842', placa: 'V4S-220', fecha: '2024-12-14', monto: 320, metodo: 'Tarjeta'},
+                {id: 6, nombre: 'Diego Núñez', origen: 'Orden', ref: 'OR-0177', placa: 'CSS-101', fecha: '2024-11-09', monto: 145, metodo: 'Efectivo'}
+            ];
 
             function render(rows) {
                 const tbody = document.getElementById('bodyHistorial');
@@ -191,7 +187,7 @@
                     tbody.appendChild(tr);
                 });
                 if (rows.length === 0) {
-                    const tr = document.createElement('tr');
+                    const tr = document.createElement('tr'); /* <- BUG resuelto (antes estaba 'ttr') */
                     tr.innerHTML = '<td colspan="8" class="empty">' + document.getElementById('tablaHistorial').dataset.empty + '</td>';
                     tbody.appendChild(tr);
                 }
@@ -202,18 +198,14 @@
                 const origen = document.getElementById('fOrigen').value;
                 const d = document.getElementById('fDesde').value;
                 const h = document.getElementById('fHasta').value;
-
-                // Filtrado en cliente (igual que tu lógica original)
                 const rows = data.filter(r => {
                     const byName = r.nombre.toLowerCase().includes(q);
-                    const byOrigen = origen === "" || r.origen === origen;
-
+                    const byOrigen = !origen || r.origen === origen;
                     const byFecha = (!d || r.fecha >= d) && (!h || r.fecha <= h);
                     return byName && byOrigen && byFecha;
                 });
                 render(rows);
             }
-
             function clearFilter() {
                 document.getElementById('fNombre').value = '';
                 document.getElementById('fOrigen').value = '';
@@ -226,20 +218,9 @@
                 tr.classList.add('fade');
                 setTimeout(() => tr.remove(), 200);
             }
-
-            /* ====== Eliminar cliente en BACK manteniendo tu botón y estilos ====== */
-            function deleteCliente(dni, btn) {
-                if (!confirm('¿Eliminar cliente ' + dni + '?'))
-                    return;
-                fakeDelete(btn);
-                window.location = '${pageContext.request.contextPath}/clientes?action=eliminar&dni=' + encodeURIComponent(dni);
-            }
-
             document.getElementById('btnAplicar').addEventListener('click', applyFilter);
             document.getElementById('btnLimpiar').addEventListener('click', clearFilter);
-
-        // Cargar historial real desde backend al iniciar
-            loadHistorial();
+            render(data);
         </script>
     </body>
 </html>

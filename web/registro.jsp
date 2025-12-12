@@ -1,5 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="modelo.Guardar"%>
+<%-- Ya no necesitamos importar modelo.Guardar --%>
 
 <!DOCTYPE html>
 <html>
@@ -7,6 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Registro de Cliente - Mecánica AZ</title>
     <style>
+        /* ... Estilos CSS (se mantienen igual) ... */
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
         .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
         h1 { text-align: center; color: #333; }
@@ -28,55 +29,11 @@
     <h1>Registro de Nuevo Cliente</h1>
     
     <%
-        // Variables para el manejo de mensajes
-        String mensaje = "";
-        String tipoMensaje = "";
+        // Recuperar y mostrar el mensaje enviado desde el Servlet
+        String mensaje = (String) request.getAttribute("mensaje");
+        String tipoMensaje = (String) request.getAttribute("tipoMensaje");
 
-        // Comprobamos si el formulario fue enviado (usando POST)
-        if ("POST".equalsIgnoreCase(request.getMethod())) {
-            
-            // 1. Recolección de parámetros
-            String usuario = request.getParameter("usuario");
-            String contrasena = request.getParameter("contrasena");
-            String nombre = request.getParameter("nombre");
-            String apellido = request.getParameter("apellido");
-            String correo = request.getParameter("correo");
-            String celular = request.getParameter("celular");
-            String direccion = request.getParameter("direccion");
-
-            // 2. Validación de campos obligatorios
-            if (usuario == null || contrasena == null || nombre == null || correo == null || 
-                usuario.isEmpty() || contrasena.isEmpty() || nombre.isEmpty() || correo.isEmpty()) {
-                
-                mensaje = "Por favor, complete todos los campos obligatorios (*).";
-                tipoMensaje = "error";
-
-            } else {
-                
-                // 3. Llamada al método guardar del Modelo
-                // Usamos una lógica simple para manejar nulls en campos opcionales
-                boolean registrado = Guardar.guardar(
-                    usuario, 
-                    contrasena, // ¡Recuerda HASHear en un proyecto real!
-                    nombre, 
-                    apellido != null ? apellido : "", 
-                    correo, 
-                    celular != null ? celular : "",
-                    direccion != null ? direccion : ""
-                );
-
-                if (registrado) {
-                    mensaje = "¡Registro exitoso! Ya eres cliente de Mecánica AZ.";
-                    tipoMensaje = "success";
-                } else {
-                    mensaje = "Error al registrar. Verifica si el usuario o correo ya están en uso.";
-                    tipoMensaje = "error";
-                }
-            }
-        }
-        
-        // 4. Muestra del mensaje
-        if (!mensaje.isEmpty()) {
+        if (mensaje != null && !mensaje.isEmpty()) {
             %>
             <div class="message <%= tipoMensaje %>">
                 <%= mensaje %>
@@ -85,7 +42,7 @@
         }
     %>
 
-    <form action="registro.jsp" method="POST">
+    <form action="RegistroServlet" method="POST">
         
         <label for="nombre">Nombre (*)</label>
         <input type="text" id="nombre" name="nombre" required>
@@ -93,7 +50,7 @@
         <label for="apellido">Apellido</label>
         <input type="text" id="apellido" name="apellido">
 
-        <label for="usuario">Usuario (Nombre de acceso) (*)</label>
+        <label for="usuario">DNI / ID de Acceso (*)</label>
         <input type="text" id="usuario" name="usuario" required>
         
         <label for="contrasena">Contraseña (*)</label>

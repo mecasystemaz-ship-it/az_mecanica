@@ -1,142 +1,258 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+// Archivo: src/main/java/controlador/ClienteServlet.java
 package controlador;
 
+import modelo.DAO.ClienteDAO; // Asegúrate que el path sea correcto (modelo.DAO)
+import modelo.Cliente;
+import java.io.IOException;
+import java.util.List;
+
+// Usamos las importaciones de Jakarta (si usas Tomcat 10+ / Jakarta EE)
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import modelo.Cliente;
-import modelo.ClienteDAO;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "ClienteServlet", urlPatterns = {"/clientes"})
+@WebServlet(name = "ClienteServlet", urlPatterns = {"/clientes", "/clientes/guardar", "/clientes/eliminar"})
 public class ClienteServlet extends HttpServlet {
 
-    private final ClienteDAO dao = new ClienteDAO();
+    private ClienteDAO clienteDAO = new ClienteDAO();
 
+    /**
+     * Maneja las peticiones GET: 1. /clientes -> Listar todos los clientes. 2.
+     * /clientes?action=edit&dni=... -> Cargar datos para el formulario de
+     * edición.
+     */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        String action = param(req, "action");
-        String q = param(req, "q");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        try {
-            switch (action) {
-                case "editar": {
-                    String dni = param(req, "dni");
-                    Cliente c = dao.buscarPorDni(dni);
-                    if (c == null) {
-                        req.setAttribute("error", "No se encontró el cliente con DNI " + dni);
-                        resp.sendRedirect(req.getContextPath() + "/clientes");
-                        return;
-                    }
-                    req.setAttribute("cliente", c);
-                    req.getRequestDispatcher("cliente-form.jsp").forward(req, resp);
-                    break;
-                }
-                case "eliminar": {
-                    String dni = param(req, "dni");
-                    boolean ok = dao.eliminar(dni);
-                    if (!ok) {
-                        req.setAttribute("error", "No se pudo eliminar el cliente (revise dependencias).");
-                    }
-                    resp.sendRedirect(req.getContextPath() + "/clientes");
-                    break;
-                }
-                default: {
-                    List<Cliente> clientes = dao.listar(q);
-                    req.setAttribute("lista", clientes);
-                    req.setAttribute("q", q);
-                    req.getRequestDispatcher("clientes.jsp").forward(req, resp);
-                }
-                case "historial": {
-                    // Filtros opcionales (por ahora usamos 'nombre'; los demás se pueden usar luego)
-                    String nombre = param(req, "nombre");   // texto libre
-                    String origen = param(req, "origen");   // Orden/Proforma/Web (placeholder)
-                    String desde = param(req, "desde");    // yyyy-MM-dd
-                    String hasta = param(req, "hasta");    // yyyy-MM-dd
+        String action = request.getParameter("action");
+        String path = request.getServletPath();
 
-                    // Traemos lista desde DAO
-                    var items = new modelo.ClienteDAO().listarHistorial(nombre, origen, desde, hasta);
-
-                    // Devolver JSON
-                    resp.setContentType("application/json; charset=UTF-8");
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("[");
-                    for (int i = 0; i < items.size(); i++) {
-                        var r = items.get(i);
-                        sb.append("{")
-                                .append("\"id\":").append(r.getId()).append(",")
-                                .append("\"nombre\":\"").append(escapeJson(r.getNombre())).append("\",")
-                                .append("\"origen\":\"").append(escapeJson(r.getOrigen())).append("\",")
-                                .append("\"ref\":\"").append(escapeJson(r.getRef())).append("\",")
-                                .append("\"placa\":\"").append(escapeJson(r.getPlaca())).append("\",")
-                                .append("\"fecha\":\"").append(escapeJson(r.getFecha())).append("\",")
-                                .append("\"monto\":").append(r.getMonto()).append(",")
-                                .append("\"metodo\":\"").append(escapeJson(r.getMetodo())).append("\"")
-                                .append("}");
-                        if (i < items.size() - 1) {
-                            sb.append(",");
-                        }
-                    }
-                    sb.append("]");
-                    resp.getWriter().write(sb.toString());
-                    return; // IMPORTANTE: cortar el flujo aquí
-                }
-
+        if ("/clientes".equals(path)) {
+            if ("edit".equals(action) || "view".equals(action)) {
+                // Ir a la lógica de cargar datos para el formulario de edición/vista
+                mostrarFormularioCliente(request, response, action);
+            } else {
+                // Si es solo /clientes o /clientes?action=list -> LISTAR
+                listarClientes(request, response);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            req.setAttribute("error", "Error: " + ex.getMessage());
-            req.getRequestDispatcher("clientes.jsp").forward(req, resp);
+        } else {
+            // Caso de fallback, siempre listar
+            listarClientes(request, response);
         }
     }
-    
-    private static String escapeJson(String s) {
-    if (s == null) return "";
-    return s.replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\n", "\\n")
-            .replace("\r", "\\r");
-}
 
-
+    /**
+     * Maneja las peticiones POST: 1. /clientes/guardar -> Guardar (Crear) o
+     * Actualizar un cliente. 2. /clientes/eliminar?action=delete -> Eliminar un
+     * cliente.
+     */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        String action = param(req, "action");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        if ("guardar".equals(action)) {
-            Cliente c = new Cliente(
-                    param(req, "dni"),
-                    param(req, "nombre"),
-                    param(req, "apellido"),
-                    param(req, "telefono"),
-                    param(req, "email"),
-                    param(req, "direccion")
-            );
+        request.setCharacterEncoding("UTF-8");
 
-            boolean ok = dao.existe(c.getDni()) ? dao.actualizar(c) : dao.insertar(c);
-            if (!ok) {
-                req.setAttribute("error", "No se pudo guardar el cliente.");
-                req.setAttribute("cliente", c);
-                req.getRequestDispatcher("cliente-form.jsp").forward(req, resp);
-                return;
+        String path = request.getServletPath(); // Obtiene la URL de destino (e.g., /clientes/guardar)
+        String action = request.getParameter("action"); // Se usa solo si es necesario para DELETE
+
+        // 1. Manejar la acción de GUARDAR/ACTUALIZAR
+        if ("/clientes/guardar".equals(path)) {
+            // Llama directamente a la lógica de guardado/actualización
+            guardarOActualizarCliente(request, response);
+        } // 2. Manejar la acción de ELIMINAR (usando action=delete como parámetro)
+        else if ("/clientes/eliminar".equals(path) && "delete".equals(action)) {
+            eliminarCliente(request, response);
+        } // 3. Fallback
+        else {
+            response.sendRedirect(request.getContextPath() + "/clientes");
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // --- Métodos de Lógica de Negocio ---
+    // -------------------------------------------------------------------
+    private void listarClientes(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            List<Cliente> clientes = clienteDAO.listarClientes();
+            System.out.println("Clientes encontrados: " + clientes.size());
+            request.setAttribute("listaClientes", clientes);
+        } catch (Exception e) {
+            // Manejo de errores de base de datos
+            request.getSession().setAttribute("mensajeError", "Error al cargar la lista de clientes: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Usar FORWARD para que el JSP pueda acceder a 'listaClientes'
+        request.getRequestDispatcher("/clientes.jsp").forward(request, response);
+    }
+
+    private void mostrarFormularioCliente(HttpServletRequest request, HttpServletResponse response, String action)
+            throws ServletException, IOException {
+
+        String dni = request.getParameter("dni");
+
+        if (dni != null && !dni.isEmpty()) {
+            Cliente cliente = clienteDAO.obtenerClientePorDni(dni);
+            if (cliente != null) {
+                request.setAttribute("cliente", cliente);
+            } else {
+                request.getSession().setAttribute("mensajeError", "Cliente no encontrado con DNI: " + dni);
             }
-            resp.sendRedirect(req.getContextPath() + "/clientes");
+        }
+
+        //  CRÍTICO: Añadir la acción al request para que el JSP la pueda leer
+        request.setAttribute("action", action); // Puede ser "edit", "view", o "create" (por defecto)
+
+        // El JSP debe leer si 'cliente' está presente para decidir si es CREATE o EDIT
+        request.getRequestDispatcher("/cliente-form.jsp").forward(request, response);
+    }
+
+    private void guardarCliente(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // 1. Obtener datos (incluyendo el DNI)
+        String dni = request.getParameter("dni");
+        // ... (obtener el resto de parámetros y crear el objeto cliente)
+        Cliente cliente = new Cliente();
+        // ... (setters para nombres, apellidos, etc.)
+        cliente.setDni(dni);
+        // ...
+
+        // 2. Lógica de validación
+        if (clienteDAO.existeClientePorDni(dni)) {
+            // CRÍTICO: El DNI ya existe, no se puede registrar.
+
+            String mensajeError = "ERROR: El DNI " + dni + " ya está registrado. Use la opción Editar.";
+
+            // Cargar el objeto cliente en el request para que los campos no se borren
+            request.setAttribute("cliente", cliente);
+            request.setAttribute("error", mensajeError);
+            request.setAttribute("action", "create"); // Sigue en modo crear
+
+            // Volver a cargar el formulario con el mensaje de error
+            request.getRequestDispatcher("/cliente-form.jsp").forward(request, response);
+            return; // Detener la ejecución
+        }
+
+        // 3. Si el DNI no existe, se procede al registro (ADD)
+        if (clienteDAO.agregarCliente(cliente)) {
+            // Éxito: Redirigir a la lista de clientes
+            response.sendRedirect(request.getContextPath() + "/clientes?mensaje=Cliente registrado con éxito.");
+        } else {
+            // Fallo en la inserción por otra razón (ej. error de conexión o SQL)
+            request.setAttribute("error", "ERROR: No se pudo registrar el cliente. Revise los logs del servidor.");
+            request.setAttribute("action", "create");
+            request.getRequestDispatcher("/cliente-form.jsp").forward(request, response);
+        }
+    }
+
+    private void guardarOActualizarCliente(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // 0. Configuración y Obtención de Parámetros (igual que antes)
+        request.setCharacterEncoding("UTF-8");
+        String dni = request.getParameter("dni");
+        String nombres = request.getParameter("nombres");
+        String apellidos = request.getParameter("apellidos");
+        String telefono = request.getParameter("telefono");
+        String correo = request.getParameter("correo");
+        String direccion = request.getParameter("direccion");
+        String origen = request.getParameter("origen");
+        String nreferencia = request.getParameter("nreferencia");
+        String placa = request.getParameter("placa");
+        String metodo = request.getParameter("metodo");
+
+        // Validaciones mínimas
+        if (dni == null || dni.isEmpty() || nombres == null || nombres.isEmpty()) {
+            request.getSession().setAttribute("mensajeError", "El DNI y Nombres son obligatorios.");
+            response.sendRedirect(request.getContextPath() + "/clientes");
             return;
         }
 
-        // Si no se especifica action, vuelve al listado
-        resp.sendRedirect(req.getContextPath() + "/clientes");
+        // Crear y poblar el objeto Cliente con todos los datos recibidos
+        Cliente cliente = new Cliente();
+        cliente.setDni(dni);
+        cliente.setNombres(nombres);
+        cliente.setApellidos(apellidos);
+        cliente.setTelefono(telefono);
+        cliente.setCorreo(correo);
+        cliente.setDireccion(direccion);
+        cliente.setOrigen(origen);
+        cliente.setNreferencia(nreferencia);
+        cliente.setPlaca(placa);
+        cliente.setMetodo(metodo);
+
+        // 1. Determinar si es UPDATE o CREATE (buscando por DNI)
+        // Es CRÍTICO usar 'obtenerClientePorDni' para saber si el cliente ya existe en la BD.
+        Cliente clienteExistente = clienteDAO.obtenerClientePorDni(dni);
+
+        boolean exito;
+        String accionTexto;
+
+        if (clienteExistente != null) {
+            // --- CASO 1: ACTUALIZAR (El DNI ya existe) ---
+            exito = clienteDAO.actualizarCliente(cliente);
+            accionTexto = "actualizado";
+        } else {
+            // --- CASO 2: CREAR (El DNI no existe, se intenta agregar) ---
+
+            // **OPCIONAL:** Si deseas que el error sea más estricto y no solo por DNI,
+            // puedes usar aquí tu lógica de validación de correo duplicado si lo tienes como UNIQUE.
+            exito = clienteDAO.agregarCliente(cliente);
+            accionTexto = "registrado";
+        }
+
+        // 2. Manejo de Respuesta (Éxito o Fracaso)
+        if (exito) {
+            // Éxito: Redirigir al listado (Patrón PRG)
+            request.getSession().setAttribute("mensajeExito", "Cliente " + accionTexto + " correctamente.");
+            response.sendRedirect(request.getContextPath() + "/clientes");
+        } else {
+            // Fracaso: Puede ser por DNI/Correo duplicado, error SQL o error de conexión.
+
+            // Si falló y estamos en modo CREAR (no existía antes), volvemos al formulario con un error.
+            // Esto cubre fallos por UNIQUE/NOT NULL en la BD.
+            if (clienteExistente == null) {
+                String mensajeError = "Error al registrar el cliente. Verifique que el DNI no esté duplicado o que los datos sean válidos.";
+
+                // Re-enviamos el objeto cliente para que los campos del formulario se mantengan llenos.
+                request.setAttribute("cliente", cliente);
+                request.setAttribute("error", mensajeError);
+                request.setAttribute("action", "create");
+
+                // Hacemos FORWARD para mostrar el error en la misma página.
+                request.getRequestDispatcher("/cliente-form.jsp").forward(request, response);
+            } else {
+                // Si falló la ACTUALIZACIÓN, redirigimos con un mensaje de error genérico.
+                request.getSession().setAttribute("mensajeError", "Error al actualizar el cliente. Verifique los logs del servidor.");
+                response.sendRedirect(request.getContextPath() + "/clientes");
+            }
+        }
     }
 
-    private String param(HttpServletRequest req, String name) {
-        String v = req.getParameter(name);
-        return v == null ? "" : v.trim();
+    private void eliminarCliente(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String dni = request.getParameter("dni");
+
+        if (dni != null && !dni.isEmpty()) {
+            boolean exito = clienteDAO.eliminarCliente(dni);
+
+            if (exito) {
+                request.getSession().setAttribute("mensajeExito", "Cliente eliminado correctamente.");
+            } else {
+                request.getSession().setAttribute("mensajeError", "Error al eliminar el cliente. Puede tener registros asociados.");
+            }
+        } else {
+            request.getSession().setAttribute("mensajeError", "DNI no proporcionado para la eliminación.");
+        }
+
+        // Redirigir al listado principal
+        response.sendRedirect(request.getContextPath() + "/clientes");
     }
 }

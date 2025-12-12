@@ -1,271 +1,291 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
 <%
-  String rolGuard = (String) session.getAttribute("rol");
-  if (rolGuard == null || !"ADMIN".equals(rolGuard)) {
-    response.sendRedirect(request.getContextPath() + "/login.jsp");
-    return;
-  }
+    String rolGuard = (String) session.getAttribute("rol");
+    if (rolGuard == null || !"ADMIN".equals(rolGuard)) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
 %>
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>AZ Mecánica | Servicios</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet"
-        href="${pageContext.request.contextPath}/css/estiloM.css?v=<%=System.currentTimeMillis()%>">
-  <style>
-    /* mínimos por si falta algo */
-    .container{width:min(1200px,92%);margin:24px auto}
-    .topbar, .tabs, .actions{display:flex;gap:12px;align-items:center}
-    .card{background:var(--card,#1f1f24);border:1px solid var(--border,#2a2a30);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
-    .grid{display:grid;gap:12px}
-    .grid-4{grid-template-columns:repeat(4,1fr)}
-    .field{display:flex;flex-direction:column;gap:6px}
-    .table{width:100%;border-collapse:collapse}
-    .table th,.table td{border-bottom:1px solid var(--border,#2a2a30);padding:10px;text-align:left}
-    .btn{background:var(--accent,#ffcc00);color:#000;padding:8px 12px;border-radius:8px;text-decoration:none;border:none;cursor:pointer}
-    .btn.sec{background:transparent;color:var(--ink,#f5f5f5);border:1px solid var(--border,#2a2a30)}
-    .right{margin-left:auto}
-    .muted{color:var(--muted,#b7b7c2)}
-    .inline{display:flex;gap:8px;align-items:center}
-    .total{font-weight:700}
-    .items thead th{position:sticky;top:0;background:var(--panel,#17171b)}
-    .items input{width:100%}
-    .pill{padding:2px 8px;border-radius:999px;border:1px solid var(--border)}
-  </style>
-</head>
-<body class="bg">
+    <head>
+        <meta charset="UTF-8">
+        <title>AZ Mecánica | Catálogo de Servicios</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet"
+              href="${pageContext.request.contextPath}/css/estiloM.css?v=<%=System.currentTimeMillis()%>">
+        <style>
+            /* Estilos de ejemplo para alerts y modals */
+            .alert {
+                padding: 10px;
+                margin-bottom: 20px;
+                border-radius: 4px;
+            }
+            .alert-success {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+            .alert-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+            .grid2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            .form-footer {
+                margin-top: 20px;
+                text-align: right;
+            }
+        </style>
+    </head>
+    <body>
+        <header class="topbar">
+            <div class="container topbar__row">
+                <div class="brand">
+                    <img src="${pageContext.request.contextPath}/imgs/logo-az.png" alt="AZ" class="logo">
+                    <span class="brand__label">Servicios</span>
+                </div>
+                <a class="btn btn-outline" href="${pageContext.request.contextPath}/login.jsp">Cerrar sesión</a>
+            </div>
+        </header>
+        <nav class="tabs">
+            <a href="${pageContext.request.contextPath}/index.jsp">Inicio</a>
+            <a>Registro de Pagos</a>
+            <a>Productos</a>
+            <a>Inventario</a>
+            <a href="${pageContext.request.contextPath}/citas.jsp">Citas</a>
+            <a class="active" href="${pageContext.request.contextPath}/servicios">Servicios</a>
+            <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
+            <a href="${pageContext.request.contextPath}/vehiculos.jsp">Vehículos</a>
+        </nav>
 
-<header class="topbar container">
-  <div class="brand inline">
-    <img src="${pageContext.request.contextPath}/imgs/logo-az.png" alt="AZ" style="height:32px">
-    <span class="brand__label">Servicios</span>
-  </div>
-  <div class="right inline">
-    <a class="btn" href="${pageContext.request.contextPath}/servicios?accion=nuevo">+ Nuevo servicio</a>
-  </div>
-</header>
+        <main class="container">
 
-<main class="container grid" style="gap:20px">
-  <c:if test="${not empty param.msg}">
-    <div class="card" style="border-color:#3a3">
-      ✅ ${param.msg}
-    </div>
-  </c:if>
-  <c:if test="${not empty error}">
-    <div class="card" style="border-color:#a33">
-      ❌ ${error}
-    </div>
-  </c:if>
+            <c:if test="${not empty sessionScope.mensajeExito}">
+                <div class="alert alert-success">${sessionScope.mensajeExito}</div>
+                <c:remove var="mensajeExito" scope="session"/>
+            </c:if>
+            <c:if test="${not empty sessionScope.mensajeError}">
+                <div class="alert alert-danger">${sessionScope.mensajeError}</div>
+                <c:remove var="mensajeError" scope="session"/>
+            </c:if>
 
-  <!-- ==== LISTADO + FILTROS ==== -->
-  <c:if test="${empty servicio}">
-    <section class="card" id="filtros">
-      <form class="grid grid-4" method="get" action="${pageContext.request.contextPath}/servicios">
-        <input type="hidden" name="accion" value="listar">
-        <div class="field"><label>Cliente / DNI</label><input name="fNombre" type="text" value="${param.fNombre}"></div>
-        <div class="field">
-          <label>Origen</label>
-          <select name="fOrigen">
-            <option value="">Todos</option>
-            <option ${param.fOrigen=='Orden'?'selected':''}>Orden</option>
-            <option ${param.fOrigen=='Proforma'?'selected':''}>Proforma</option>
-            <option ${param.fOrigen=='Web'?'selected':''}>Web</option>
-          </select>
-        </div>
-        <div class="field"><label>Desde</label><input name="fDesde" type="date" value="${param.fDesde}"></div>
-        <div class="field"><label>Hasta</label><input name="fHasta" type="date" value="${param.fHasta}"></div>
-        <div class="inline" style="grid-column:1/-1;justify-content:flex-end">
-          <button class="btn" type="submit">Aplicar</button>
-          <a class="btn sec" href="${pageContext.request.contextPath}/servicios?accion=listar">Limpiar</a>
-        </div>
-      </form>
-    </section>
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <span>Catálogo de Servicios</span>
+                </div>
 
-    <section class="card">
-      <div class="section-head inline" style="justify-content:space-between">
-        <h2>Listado</h2>
-        <a class="btn" href="${pageContext.request.contextPath}/servicios?accion=nuevo">+ Nuevo</a>
-      </div>
-      <div class="table-wrap" style="overflow:auto;max-height:60vh">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>ID</th><th>Fecha</th><th>Título</th><th>Cliente</th><th>Placa</th>
-              <th>Origen</th><th>Ref</th><th>Tipo</th><th>Estado</th><th class="right">Total</th><th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-          <c:forEach var="r" items="${lista}">
-            <tr>
-              <td>${r.id}</td>
-              <td>${r.fecha}</td>
-              <td>${r.titulo}</td>
-              <td>${r.cliente} <span class="muted">(${r.dni_cliente})</span></td>
-              <td>${r.placa}</td>
-              <td>${r.origen}</td>
-              <td><c:out value="${r.numero_ref}"/></td>
-              <td>${r.tipo}</td>
-              <td><span class="pill">${r.estado}</span></td>
-              <td class="right">S/ ${r.monto_total}</td>
-              <td class="inline">
-                <a class="btn sec" href="${pageContext.request.contextPath}/servicios?accion=editar&id=${r.id}">Editar</a>
-                <a class="btn sec" href="${pageContext.request.contextPath}/servicios?accion=estado&id=${r.id}&estado=Completado">Marcar OK</a>
-                <a class="btn sec" href="${pageContext.request.contextPath}/servicios?accion=eliminar&id=${r.id}" onclick="return confirm('¿Eliminar servicio #${r.id}?');">Eliminar</a>
-              </td>
-            </tr>
-          </c:forEach>
-          <c:if test="${empty lista}">
-            <tr><td colspan="11" class="muted">Sin resultados</td></tr>
-          </c:if>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </c:if>
+                <div class="toolbar-right">
+                    <button type="button" id="btn-open-create" class="btn btn-primary btn-round">
+                        + Añadir Servicio
+                    </button>
+                </div>
+            </div>
 
-  <!-- ==== FORM (crear/editar) ==== -->
-  <c:if test="${not empty servicio}">
-    <section class="card">
-      <h2>${servicio.id == null ? "Nuevo servicio" : ("Editar servicio #"+servicio.id)}</h2>
-      <form method="post" action="${pageContext.request.contextPath}/servicios" oninput="calcTotal()">
-        <c:if test="${servicio.id != null}">
-          <input type="hidden" name="id" value="${servicio.id}">
-        </c:if>
+            <div class="table-wrapper">
+                <table class="table flat">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre del Servicio</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Tiempo Estimado</th>
+                            <th class="center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="s" items="${listaServicios}">
+                            <tr id="servicio-${s.idServicio}" 
+                                data-row='{
+                                "idServicio": ${s.idServicio},
+                                "nombre": "${fn:escapeXml(s.nombre)}", 
+                                "categoria": "${fn:escapeXml(s.categoria)}", 
+                                "precio": ${s.precio},
+                                "tiempoEstimado": "${fn:escapeXml(s.tiempoEstimado)}", 
+                                "descripcion": "${fn:escapeXml(s.descripcion)}" 
+                                }'>
+                                <td>${s.idServicio}</td>
+                                <td>${s.nombre}</td>
+                                <td>${s.categoria}</td>
+                                <td>S/ ${s.precio}</td>
+                                <td>${s.tiempoEstimado}</td>
+                                <td class="center">
+                                    <button class="icon-btn" title="Modificar" data-edit='${s.idServicio}'>
+                                        ✏️
+                                    </button>
+                                    <button class="icon-btn danger" title="Eliminar" data-delete='${s.idServicio}'>🗑️</button>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty listaServicios}">
+                            <tr><td colspan="6" class="center muted">No hay servicios en el catálogo.</td></tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </main>
 
-        <div class="grid grid-4">
-          <div class="field"><label>Título</label><input name="titulo" required value="${servicio.titulo}"></div>
-          <div class="field"><label>Tipo</label>
-            <select name="tipo">
-              <c:set var="t" value="${servicio.tipo!=null?servicio.tipo:'Mantenimiento'}"/>
-              <option ${t=='Mantenimiento'?'selected':''}>Mantenimiento</option>
-              <option ${t=='Diagnóstico'?'selected':''}>Diagnóstico</option>
-              <option ${t=='Correctivo'?'selected':''}>Correctivo</option>
-              <option ${t=='Preventivo'?'selected':''}>Preventivo</option>
-            </select>
-          </div>
-          <div class="field"><label>DNI Cliente</label><input name="dni_cliente" maxlength="8" required value="${servicio.dniCliente}"></div>
-          <div class="field"><label>Placa</label><input name="placa_vehiculo" maxlength="10" required value="${servicio.placaVehiculo}"></div>
+        <div id="modal-crud-service" class="modal hidden">
+            <div class="modal-card">
+                <header class="modal-header">
+                    <h3 id="modal-title">Registrar Nuevo Servicio</h3>
+                </header>
 
-          <div class="field"><label>Origen</label>
-            <select name="origen">
-              <option ${servicio.origen=='Orden'?'selected':''}>Orden</option>
-              <option ${servicio.origen=='Proforma'?'selected':''}>Proforma</option>
-              <option ${servicio.origen=='Web'?'selected':''}>Web</option>
-            </select>
-          </div>
-          <div class="field"><label>N° Ref</label><input name="numero_ref" value="${servicio.numeroRef}"></div>
-          <div class="field"><label>Fecha</label><input type="date" name="fecha" value="<c:out value='${servicio.fecha}'/>" required></div>
-          <div class="field"><label>Método de pago</label><input name="metodo_pago" value="${servicio.metodoPago}"></div>
-          <div class="field"><label>Estado</label>
-            <select name="estado">
-              <c:set var="e" value="${servicio.estado!=null?servicio.estado:'Pendiente'}"/>
-              <option ${e=='Pendiente'?'selected':''}>Pendiente</option>
-              <option ${e=='En Proceso'?'selected':''}>En Proceso</option>
-              <option ${e=='Completado'?'selected':''}>Completado</option>
-              <option ${e=='Cancelado'?'selected':''}>Cancelado</option>
-            </select>
-          </div>
-          <div class="field" style="grid-column:1/-1"><label>Observaciones</label>
-            <textarea name="observaciones" rows="3">${servicio.observaciones}</textarea>
-          </div>
-        </div>
+                <form method="post" action="${pageContext.request.contextPath}/servicios/guardar" id="form-crud-service">
 
-        <h3 style="margin-top:16px">Items</h3>
-        <div style="overflow:auto;max-height:45vh">
-          <table class="table items" id="items">
-            <thead>
-              <tr>
-                <th style="width:32px">#</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th style="width:120px">Precio</th>
-                <th style="width:90px">Cant.</th>
-                <th style="width:80px"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <c:choose>
-                <c:when test="${not empty servicio.items}">
-                  <c:forEach var="it" items="${servicio.items}" varStatus="st">
-                    <tr>
-                      <td>${st.index+1}</td>
-                      <td><input name="item_nombre[]" value="${it.nombreServicio}" required></td>
-                      <td><input name="item_desc[]" value="${it.descripcion}"></td>
-                      <td><input name="item_precio[]" type="number" min="0" step="0.01" value="${it.precio}"></td>
-                      <td><input name="item_cantidad[]" type="number" min="1" step="1" value="${it.cantidad}"></td>
-                      <td><button class="btn sec" type="button" onclick="delRow(this)">Quitar</button></td>
-                    </tr>
-                  </c:forEach>
-                </c:when>
-                <c:otherwise>
-                  <tr>
-                    <td>1</td>
-                    <td><input name="item_nombre[]" placeholder="Cambio de aceite" required></td>
-                    <td><input name="item_desc[]" placeholder="Detalle opcional"></td>
-                    <td><input name="item_precio[]" type="number" min="0" step="0.01" value="0"></td>
-                    <td><input name="item_cantidad[]" type="number" min="1" step="1" value="1"></td>
-                    <td><button class="btn sec" type="button" onclick="delRow(this)">Quitar</button></td>
-                  </tr>
-                </c:otherwise>
-              </c:choose>
-            </tbody>
-          </table>
+                    <input type="hidden" name="id_servicio" id="crud-id-servicio" value=""/>
+
+                    <div class="grid2 gap">
+                        <div class="field">
+                            <label for="crud-nombre">Nombre del Servicio <span class="required">*</span></label>
+                            <input type="text" id="crud-nombre" name="nombre" required maxlength="100"/>
+                        </div>
+                        <div class="field">
+                            <label for="crud-categoria">Categoría</label>
+                            <select id="crud-categoria" name="categoria">
+                                <option value="">Seleccione</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Diagnóstico">Diagnóstico</option>
+                                <option value="Reparación">Reparación</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid2 gap">
+                        <div class="field">
+                            <label for="crud-precio">Precio (S/) <span class="required">*</span></label>
+                            <input type="number" id="crud-precio" name="precio" step="0.01" min="0" required/>
+                        </div>
+                        <div class="field">
+                            <label for="crud-tiempo">Tiempo Estimado</label>
+                            <input type="text" id="crud-tiempo" name="tiempo_estimado" maxlength="50" placeholder="Ej: 1 hora, 30 min"/>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="crud-descripcion">Descripción</label>
+                        <textarea id="crud-descripcion" name="descripcion" rows="3" maxlength="150"></textarea>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn" data-close>Cancelar</button>
+                        <button type="submit" id="crud-submit-btn" class="btn btn-primary">Registrar</button>
+                    </footer>
+                </form>
+            </div>
         </div>
 
-        <div class="inline" style="margin-top:10px;justify-content:space-between">
-          <button class="btn sec" type="button" onclick="addRow()">+ Agregar item</button>
-          <div class="total">Total estimado: <span id="totalView">S/ 0.00</span></div>
+        <div id="modal-delete" class="modal hidden">
+            <div class="modal-card small">
+                <header class="modal-header center">
+                    <h3>¿Estás seguro que deseas eliminar este servicio del catálogo?</h3>
+                </header>
+                <form method="post" action="${pageContext.request.contextPath}/servicios/eliminar">
+                    <input type="hidden" name="id_servicio" id="delete-id"/>
+                    <footer class="modal-footer two">
+                        <button type="button" class="btn" data-close>Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Confirmar</button>
+                    </footer>
+                </form>
+            </div>
         </div>
 
-        <div class="inline" style="margin-top:16px;justify-content:flex-end;gap:10px">
-          <a class="btn sec" href="${pageContext.request.contextPath}/servicios?accion=listar">Volver</a>
-          <button class="btn" type="submit">Guardar</button>
-        </div>
-      </form>
-    </section>
-  </c:if>
-</main>
+        <script>
+            // Helpers
+            const qs = s => document.querySelector(s);
+            const open = el => el.classList.remove('hidden');
+            const close = el => el.classList.add('hidden');
+            document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', e => close(e.target.closest('.modal'))));
 
-<script>
-function addRow(){
-  const tbody = document.querySelector('#items tbody');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td></td>
-    <td><input name="item_nombre[]" required></td>
-    <td><input name="item_desc[]"></td>
-    <td><input name="item_precio[]" type="number" min="0" step="0.01" value="0"></td>
-    <td><input name="item_cantidad[]" type="number" min="1" step="1" value="1"></td>
-    <td><button class="btn sec" type="button" onclick="delRow(this)">Quitar</button></td>
-  `;
-  tbody.appendChild(tr);
-  renum();
-  calcTotal();
-}
-function delRow(btn){
-  const tr = btn.closest('tr');
-  tr.parentNode.removeChild(tr);
-  renum();
-  calcTotal();
-}
-function renum(){
-  document.querySelectorAll('#items tbody tr').forEach((tr,i)=>{
-    tr.children[0].textContent = (i+1);
-  });
-}
-function calcTotal(){
-  let total = 0;
-  document.querySelectorAll('#items tbody tr').forEach(tr=>{
-    const p = parseFloat(tr.querySelector('input[name="item_precio[]"]').value||'0');
-    const c = parseInt(tr.querySelector('input[name="item_cantidad[]"]').value||'1');
-    total += p*c;
-  });
-  document.getElementById('totalView').textContent = 'S/ ' + (total.toFixed(2));
-}
-calcTotal();
-</script>
-</body>
+            const modal = qs('#modal-crud-service');
+            const form = qs('#form-crud-service');
+            const title = qs('#modal-title');
+            const submitBtn = qs('#crud-submit-btn');
+
+            // Función para limpiar y resetear el modal
+            const resetModal = () => {
+                form.reset();
+                qs('#crud-id-servicio').value = '';
+                title.textContent = 'Registrar Nuevo Servicio';
+                submitBtn.textContent = 'Registrar';
+            };
+
+            // 1. Abrir modal en modo CREAR
+            qs('#btn-open-create').addEventListener('click', () => {
+                resetModal();
+                open(modal);
+            });
+
+            // 2. Abrir modal en modo EDITAR
+            document.addEventListener('click', (e) => {
+                // 1. Encuentra el botón que contiene el atributo data-edit
+                const editBtn = e.target.closest('[data-edit]');
+                if (!editBtn)
+                    return;
+
+                // 2. CORRECCIÓN CRÍTICA: Usar .dataset para leer el ID de forma segura
+                // data-edit se lee como .dataset.edit
+                const id = editBtn.dataset.edit;
+
+                if (!id) {
+                    console.error('DEBUG: ID (data-edit) no pudo leerse correctamente.');
+                    return;
+                }
+
+                const rowSelector = `#servicio-${id}`;
+                const row = qs(rowSelector);
+
+                // 🚨 DEBUG CRÍTICO: Muestra qué está buscando y qué encuentra
+                console.log('DEBUG: Selector de fila buscado:', rowSelector);
+                console.log('DEBUG: Elemento row encontrado:', row);
+
+                if (!row) {
+                    console.error('Fila de servicio no encontrada para ID:', id);
+                    return;
+                }
+
+                // Si la fila se encuentra, el modal se abre.
+                try {
+                    const data = JSON.parse(row.getAttribute('data-row'));
+
+                    console.log('DEBUG: Objeto de datos parseado:', data);
+
+                    // Rellenar campos del modal
+                    qs('#crud-id-servicio').value = data.idServicio || '';
+                    qs('#crud-nombre').value = data.nombre || '';
+                    qs('#crud-categoria').value = data.categoria || '';
+                    qs('#crud-precio').value = data.precio || '';
+                    qs('#crud-tiempo').value = data.tiempoEstimado || '';
+                    qs('#crud-descripcion').value = data.descripcion || '';
+
+                    // Cambiar UI y abrir
+                    title.textContent = 'Modificar Servicio ID: ' + (data.idServicio || id);
+                    submitBtn.textContent = 'Guardar Cambios';
+                    open(modal);
+
+                } catch (err) {
+                    console.error('ERROR CRÍTICO: Falló al parsear el JSON de la fila.', err);
+                    console.log('JSON de la fila que falló:', row.getAttribute('data-row'));
+                }
+            });
+
+            // 3. Abrir modal de Eliminación
+            document.addEventListener('click', (e) => {
+                const b = e.target.closest('[data-delete]');
+                if (!b)
+                    return;
+                qs('#delete-id').value = b.getAttribute('data-delete');
+                open(qs('#modal-delete'));
+            });
+        </script>
+    </body>
 </html>
